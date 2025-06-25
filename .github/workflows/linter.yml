@@ -1,0 +1,51 @@
+name: Linter
+permissions:
+  contents: write
+  actions: write
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'src/**'
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - 'src/**'
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Checkout code & init submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v6.3.1
+        with:
+          python-version: '3.12'
+          enable-cache: true
+          cache-suffix: "ruff-linter"
+          cache-dependency-glob: |
+            **/pyproject.toml
+            **/uv.lock
+
+      - name: Create venv & Install dependencies
+        run: |
+          uv venv
+          uv sync
+
+      - name: Ruff lint (auto-fix)
+        run: uv run ruff check --fix src
+
+      - name: 💾 Commit & push fixes
+        if: github.repository_owner == github.actor
+        uses: stefanzweifel/git-auto-commit-action@v6.0.1
+        with:
+          commit_message: "[skip ci] style(src): ruff auto-fix"
+          file_pattern: src/**

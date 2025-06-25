@@ -1,0 +1,72 @@
+name: Kernel Builder
+permissions:
+  contents: write
+  actions: write
+
+on:
+  workflow_call:
+    inputs:
+      KSU:
+        type: string
+        required: true
+      LXC:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      KSU:
+        description: "KernelSU variant"
+        default: "NONE"
+        type: choice
+        options: ["NONE", "NEXT", "SUKI"]
+
+      LXC:
+        description: "LXC"
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+jobs:
+  default:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code & init submodules
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v6.3.1
+        with:
+          python-version: '3.12'
+          enable-cache: true
+          cache-suffix: "gki-builder"
+          cache-dependency-glob: |
+            **/pyproject.toml
+            **/uv.lock
+
+      - name: Create venv & Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq bc bison ccache curl flex git tar wget
+
+          uv venv
+          uv sync
+
+      - name: Build
+        id: setup-env
+        env:
+          KSU: ${{ inputs.KSU }}
+          LXC: ${{ inputs.LXC }}
+        run: |
+          uv run python -m src.main
+
+      - name: Upload final artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel${{ steps.setup-env.outputs.variant }}
+          path: |
+            ${{ steps.setup-env.outputs.output }}/ESK-${{ steps.setup-env.outputs.version }}${{ steps.setup-env.outputs.variant }}-AnyKernel3.zip
+            ${{ steps.setup-env.outputs.output }}/ESK-${{ steps.setup-env.outputs.version }}${{ steps.setup-env.outputs.variant }}-boot.img
+
