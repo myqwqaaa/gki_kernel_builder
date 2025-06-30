@@ -35,39 +35,3 @@ jobs:
     with:
       KSU: ${{ matrix.variant.KSU }}
       LXC: ${{ matrix.variant.LXC }}
-  upload:
-    name: Publish ${{ matrix.variant.name }} artifacts
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        variant:
-          - name: Non-KSU
-            KSU: NONE
-            LXC: "false"
-          - name: Non-KSU-LXC
-            KSU: NONE
-            LXC: "true"
-          - name: KSUN
-            KSU: NEXT
-            LXC: "false"
-          - name: KSUN-LXC
-            KSU: NEXT
-            LXC: "true"
-          - name: SUKISU
-            KSU: SUKI
-            LXC: "false"
-          - name: SUKISU-LXC
-            KSU: SUKI
-            LXC: "true"
-    steps:
-      - name: Download {{ matrix.variant.name }} artifact
-        uses: actions/download-artifact@v4.3.0
-        with:
-          name: kernel-${{ matrix.variant.name }}
-          path: artifacts/${{ matrix.variant.name }}
-      - name: Re-upload
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: kernel-${{ matrix.variant.name }}
-          path: artifacts/${{ matrix.variant.name }}
