@@ -30,7 +30,7 @@ on:
 jobs:
   default:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code & init submodules
         uses: actions/checkout@v4
@@ -70,4 +70,3 @@ jobs:
           path: |
             ${{ steps.setup-env.outputs.output }}/ESK-${{ steps.setup-env.outputs.version }}${{ steps.setup-env.outputs.variant }}-AnyKernel3.zip
             ${{ steps.setup-env.outputs.output }}/ESK-${{ steps.setup-env.outputs.version }}${{ steps.setup-env.outputs.variant }}-boot.img
-

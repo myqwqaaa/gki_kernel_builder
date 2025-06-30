@@ -1,6 +1,7 @@
 import os
 from src.main import KernelBuilder
 
+
 def run() -> None:
     KSU: str = input("Choose KernelSU Variant (NONE, NEXT, SUKI): ").upper()
     LXC: str = str(input("Apply LXC patch (Y/n): ").lower() == "y").lower()
@@ -11,5 +12,6 @@ def run() -> None:
 
     KernelBuilder().run_build()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     run()
