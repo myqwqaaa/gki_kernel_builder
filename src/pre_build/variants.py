@@ -17,19 +17,19 @@ class Variants:
         k: str = self.ksu.upper()
 
         if k == "NONE":
-            result = ["non-ksu"]
+            result = ["Non-KSU"]
         elif k == "NEXT":
-            result = ["ksu-next"]
+            result = ["KSUN"]
         elif k == "SUKI":
-            result = ["sukisu"]
+            result = ["SUKISU"]
         else:
             log(f"Unknown KernelSU variant {self.ksu!r}", "error")
-            return ["unknown"]
+            return ["UNKNOWN"]
 
         if self.use_lxc:
-            result.append("lxc")
+            result.append("LXC")
         return result
 
     @property
     def suffix(self) -> str:
-        return f"-{'-'.join(self.variant_name)}" if self.variant_name else "-unknown"
+        return f"-{'-'.join(self.variant_name)}" if self.variant_name else "-UNKNOWN"

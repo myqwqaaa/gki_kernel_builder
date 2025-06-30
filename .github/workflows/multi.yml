@@ -4,44 +4,70 @@ permissions:
   actions: write
 
 on:
-  workflow_dispatch:
-
+  workflow_dispatch: null
+  
 jobs:
   build:
     strategy:
       matrix:
         variant:
-          - { name: "Non-KSU", KSU: "NONE", LXC: "false"}
-          - { name: "Non-KSU+LXC", KSU: "NONE", LXC: "true"}
-          - { name: "KSUN", KSU: "NEXT", LXC: "false" }
-          - { name: "KSUN+LXC", KSU: "NEXT", LXC: "true" }
-          - { name: "SUKISU", KSU: "SUKI", LXC: "false" }
-          - { name: "SUKISU+LXC", KSU: "SUKI", LXC: "true" }
+          - name: Non-KSU
+            KSU: NONE
+            LXC: "false"
+          - name: Non-KSU-LXC
+            KSU: NONE
+            LXC: "true"
+          - name: KSUN
+            KSU: NEXT
+            LXC: "false"
+          - name: KSUN-LXC
+            KSU: NEXT
+            LXC: "true"
+          - name: SUKISU
+            KSU: SUKI
+            LXC: "false"
+          - name: SUKISU-LXC
+            KSU: SUKI
+            LXC: "true"
     name: Build ${{ matrix.variant.name }} variant
     uses: ./.github/workflows/build.yml
     secrets: inherit
     with:
       KSU: ${{ matrix.variant.KSU }}
       LXC: ${{ matrix.variant.LXC }}
-
   upload:
     name: Publish ${{ matrix.variant.name }} artifacts
     needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        variant: *variants
-
+        variant:
+          - name: Non-KSU
+            KSU: NONE
+            LXC: "false"
+          - name: Non-KSU-LXC
+            KSU: NONE
+            LXC: "true"
+          - name: KSUN
+            KSU: NEXT
+            LXC: "false"
+          - name: KSUN-LXC
+            KSU: NEXT
+            LXC: "true"
+          - name: SUKISU
+            KSU: SUKI
+            LXC: "false"
+          - name: SUKISU-LXC
+            KSU: SUKI
+            LXC: "true"
     steps:
       - name: Download this variant's artifact
         uses: actions/download-artifact@v3
         with:
           name: kernel-${{ matrix.variant.name }}
           path: artifacts/${{ matrix.variant.name }}
-
-      - name: Re-upload as separate bundle
+      - name: Re-upload
         uses: actions/upload-artifact@v3
         with:
           name: kernel-${{ matrix.variant.name }}
           path: artifacts/${{ matrix.variant.name }}
-              
