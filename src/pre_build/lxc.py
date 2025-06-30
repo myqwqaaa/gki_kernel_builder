@@ -1,8 +1,7 @@
-import requests
-import subprocess
 import os
 
 from subprocess import CompletedProcess
+from src.config.config import PATCHES
 from src.utils.shell import Shell
 from src.utils.log import log
 from typing import Final, TypeAlias
@@ -20,21 +19,15 @@ class LXCPatcher:
     def __init__(self) -> None:
         self.shell: Shell = Shell()
         self.lxc: bool = os.getenv("LXC", "false").lower() == "true"
-
-    def _patch(self, patch: str | Path) -> Proc:
-        with open(patch, "rb") as f:
-            return subprocess.run(
-                ["patch", "-p1", "--forward", "--fuzz=3"], input=f.read(), check=True
-            )
+        self.susfs: bool = os.getenv("SUSFS", "false").lower() == "true"
 
     def apply(self) -> Proc | None:
+        LXC: Path = PATCHES / "lxc.patch"
+        LXC_SUSFS: Path = PATCHES / "lxc_susfs.patch"
         if self.lxc:
-            log("Downloading LXC patch")
-            resp = requests.get(self.PATCH_URL)
-            resp.raise_for_status()
-            patch_file = Path("lxc.patch")
-            patch_file.write_bytes(resp.content)
-            log("Applying LXC patch")
-            return self._patch(str(patch_file))
+            log("Applying LXC Patches")
+            if self.susfs:
+                return self.shell.patch(str(LXC_SUSFS))
+            return self.shell.patch(str(LXC))
         else:
             return

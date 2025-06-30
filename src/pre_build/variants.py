@@ -7,9 +7,10 @@ from dataclasses import dataclass, field
 @dataclass(slots=True)
 class Variants:
     ksu: str = field(default_factory=lambda: os.getenv("KSU", "NONE"))
-    use_lxc: bool = field(
+    lxc: bool = field(
         default_factory=lambda: os.getenv("LXC", "false").lower() == "true"
     )
+    susfs: bool = os.getenv("SUSFS", "false").lower() == "true"
 
     @property
     def variant_name(self) -> list[str]:
@@ -26,7 +27,10 @@ class Variants:
             log(f"Unknown KernelSU variant {self.ksu!r}", "error")
             return ["UNKNOWN"]
 
-        if self.use_lxc:
+        if self.susfs:
+            result.append("SUSFS")
+
+        if self.lxc:
             result.append("LXC")
         return result
 
