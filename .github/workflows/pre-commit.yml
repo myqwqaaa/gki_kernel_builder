@@ -7,12 +7,8 @@ on:
   workflow_dispatch:
   push:
     branches: [ "master" ]
-    paths:
-      - 'src/**'
   pull_request:
     branches: [ "master" ]
-    paths:
-      - 'src/**'
 
 jobs:
   linter:
@@ -22,7 +18,6 @@ jobs:
       - name: 🔍 Checkout code & init submodules
         uses: actions/checkout@v4
         with:
-          submodules: true
           fetch-depth: 1
 
       - name: astral-sh/setup-uv
@@ -40,12 +35,14 @@ jobs:
           uv venv
           uv sync
 
-      - name: Ruff lint (auto-fix)
-        run: uv run ruff check --fix src
+      - name: Run pre-commit hook
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
 
-      - name: 💾 Commit & push fixes
+      - name: Commit & push fixes
         if: github.repository_owner == github.actor
         uses: stefanzweifel/git-auto-commit-action@v6.0.1
         with:
-          commit_message: "[skip ci] style(src): ruff auto-fix"
+          commit_message: "[skip ci] style(src): pre-commit hook"
           file_pattern: src/**
