@@ -4,6 +4,7 @@ from subprocess import CompletedProcess
 from typing import ClassVar, TypeAlias
 from pathlib import Path
 import zipfile
+import os
 
 from src.config.config import (
     BOOT_SIGNING_KEY,
@@ -43,6 +44,7 @@ class KernelBuilder:
         self.source: SourceManager = SourceManager()
         self.lxc: LXCPatcher = LXCPatcher()
         self.kpm: KPMPatcher = KPMPatcher()
+        self.local_run: bool = os.getenv("LOCAL_RUN", "false").lower() == "true"
 
     def run_build(self) -> None:
         """
@@ -66,7 +68,8 @@ class KernelBuilder:
         self.source.clone_sources()
 
         # Export environment variables for GitHub Actions after clone kernel
-        self.environment.export_github_env()
+        if not self.local_run:
+            self.environment.export_github_env()
 
         # ====== Build  ======
         # Enter Workspace

@@ -5,7 +5,7 @@ from typing import Final
 # ====== Paths ======
 ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
 WORKSPACE: Final[Path] = ROOT / "kernel"
-TOOLCHAIN: Final[Path] = Path("/opt/toolchain")
+TOOLCHAIN: Final[Path] = ROOT / "toolchain"
 
 # ====== Build ======
 DEFCONFIG: Final[str] = "esk_defconfig"
