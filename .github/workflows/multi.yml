@@ -1,4 +1,4 @@
-name: Kernel Builder
+name: Multi Variants Builder
 permissions:
   contents: write
   actions: write
