@@ -20,21 +20,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: astral-sh/setup-uv
-        uses: astral-sh/setup-uv@v6.3.1
-        with:
-          python-version: '3.12'
-          enable-cache: true
-          cache-suffix: "ruff-linter"
-          cache-dependency-glob: |
-            **/pyproject.toml
-            **/uv.lock
-
-      - name: Create venv & Install dependencies
-        run: |
-          uv venv
-          uv sync
-
       - name: Run pre-commit hook
         uses: pre-commit/action@v3.0.1
         with:
