@@ -23,3 +23,25 @@ jobs:
     with:
       KSU: ${{ matrix.variant.KSU }}
       LXC: ${{ matrix.variant.LXC }}
+
+  upload:
+    name: Publish ${{ matrix.variant.name }} artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant: *variants
+
+    steps:
+      - name: Download this variant's artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: kernel-${{ matrix.variant.name }}
+          path: artifacts/${{ matrix.variant.name }}
+
+      - name: Re-upload as separate bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: kernel-${{ matrix.variant.name }}
+          path: artifacts/${{ matrix.variant.name }}
+              
