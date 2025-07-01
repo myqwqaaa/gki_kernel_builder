@@ -82,7 +82,7 @@ jobs:
           LATEST_TAG=$(gh api repos/$RELEASE_REPO/tags \
            --header "Authorization: token $GH_TOKEN" \
            --jq '.[0].name')
- 
+
           if [ -z "$LATEST_TAG" ]; then
             RELEASE_TAG="v1.0"
           else
@@ -104,4 +104,4 @@ jobs:
           files: release_files/**/*
           body: |
             ## 📢 ESK KERNEL {{ env.RELEASE_TAG }}
-           
+
