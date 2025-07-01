@@ -1,4 +1,4 @@
-name: Multi Variants Builder
+name: Release Build
 permissions:
   contents: write
   actions: write
@@ -58,3 +58,49 @@ jobs:
       KSU: ${{ matrix.variant.KSU }}
       SUSFS: ${{ matrix.variant.SUSFS }}
       LXC: ${{ matrix.variant.LXC }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release_files
+
+      - name: Generate new tag
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          RELEASE_REPO: "bachnxuan/android12-5.10-lts"
+        run: |
+          LATEST_TAG=$(gh api repos/$RELEASE_REPO/tags \
+           --header "Authorization: token $GH_TOKEN" \
+           --jq '.[0].name')
+ 
+          if [ -z "$LATEST_TAG" ]; then
+            RELEASE_TAG="v1.0"
+          else
+            RELEASE_TAG=$(awk -F. '{ print $1 "." ($2 + 1) }' <<< "$LATEST_TAG")
+          fi
+
+          echo "New tag: $RELEASE_TAG"
+          echo "RELEASE_REPO=${RELEASE_REPO}" >> $GITHUB_ENV
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> $GITHUB_ENV
+
+      - name: Upload builds to release
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: ${{ env.RELEASE_REPO }}
+          name: ${{ env.RELEASE_TAG }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          prerelease: true
+          files: release_files/**/*
+          body: |
+            ## 📢 ESK KERNEL {{ env.RELEASE_TAG }}
+           
