@@ -30,6 +30,8 @@ class Variants:
             result = ["KSUN"]
         elif k == "SUKI":
             result = ["SUKISU"]
+        elif k == "RKSU":
+            result = ["RKSU"]
         else:
             log(f"Unknown KernelSU variant {self.ksu!r}", "error")
             return ["UNKNOWN"]

@@ -51,6 +51,22 @@ jobs:
             KSU: SUKI
             SUSFS: "true"
             LXC: "true"
+          - name: RKSU
+            KSU: RKSU
+            SUSFS: "false"
+            LXC: "false"
+          - name: RKSU-SUSFS
+            KSU: RKSU
+            SUSFS: "true"
+            LXC: "false"
+          - name: RKSU-LXC
+            KSU: RKSU
+            SUSFS: "false"
+            LXC: "true"
+          - name: RKSU-SUSFS-LXC
+            KSU: RKSU
+            SUSFS: "true"
+            LXC: "true"
     name: Build ${{ matrix.variant.name }} variant
     uses: ./.github/workflows/build.yml
     secrets: inherit

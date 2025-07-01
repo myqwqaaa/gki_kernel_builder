@@ -27,13 +27,13 @@ MKBOOTIMG: Final[dict[str, str]] = {
 }
 
 CLANG: Final[dict[str, str]] = {
-    "url": "gitlab.com:crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r547379",
+    "url": "gitlab.com:crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r547379.git",
     "branch": "15.0",
     "to": str(TOOLCHAIN / "clang"),
 }
 
 SUSFS: Final[dict[str, str]] = {
-    "url": "gitlab.com:simonpunk/susfs4ksu",
+    "url": "gitlab.com:simonpunk/susfs4ksu.git",
     "branch": "gki-android12-5.10",
     "to": str(WORKSPACE / "susfs4ksu"),
 }

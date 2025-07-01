@@ -1,3 +1,7 @@
+from re import Pattern
+
+
+import re
 import requests
 
 from dataclasses import dataclass, field
@@ -16,22 +20,29 @@ class SourceManager:
     shell: Shell = field(default_factory=Shell)
     sources: list[dict[str, str]] = field(default_factory=lambda: SOURCES.copy())
 
-    def git_simplifier(
-        self, repo: dict[str, str] | None = None, url: str | None = None
-    ) -> str | None:
-        repo_url: str | None = None
-        if repo and repo.get("url", None):
-            repo_url = repo["url"]
-        elif url:
-            repo_url = url
-        else:
-            return repo_url
-
-        with requests.get(repo_url) as resp:
+    @staticmethod
+    def git_simplifier(url: str) -> str:
+        with requests.get(url) as resp:
             parsed: ParseResult = urlparse(resp.url)
             return f"{parsed.netloc}:{parsed.path.strip('/')}"
 
-    def restore_simplified(self, simplified: str) -> str:
+    @staticmethod
+    def is_simplified(url: str) -> bool:
+        valid_char: Pattern[str] = re.compile(r"^[A-Za-z0-9_.-]+$")
+        try:
+            host, rest = url.split(":", 1)
+            owner, repo = rest.split("/", 1)
+        except ValueError:
+            return False
+
+        for part in (host, owner, repo):
+            if not part or not valid_char.fullmatch(part):
+                return False
+
+        return True
+
+    @staticmethod
+    def restore_simplified(simplified: str) -> str:
         if simplified.startswith(("http://", "https://")):
             url = simplified
         else:
