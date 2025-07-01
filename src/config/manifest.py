@@ -32,7 +32,20 @@ CLANG: Final[dict[str, str]] = {
     "to": str(TOOLCHAIN / "clang"),
 }
 
-SOURCES: Final[list[dict[str, str]]] = [KERNEL, ANYKERNEL, BUILD_TOOL, MKBOOTIMG, CLANG]
+SUSFS: Final[dict[str, str]] = {
+    "url": "gitlab.com:simonpunk/susfs4ksu",
+    "branch": "gki-android12-5.10",
+    "to": str(WORKSPACE / "susfs4ksu"),
+}
+
+SOURCES: Final[list[dict[str, str]]] = [
+    KERNEL,
+    ANYKERNEL,
+    BUILD_TOOL,
+    MKBOOTIMG,
+    CLANG,
+    SUSFS,
+]
 
 if __name__ == "__main__":
     raise SystemExit("This file is meant to be imported, not executed.")

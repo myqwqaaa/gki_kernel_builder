@@ -20,7 +20,10 @@ class Builder:
     workspace: ClassVar[Path] = WORKSPACE
     jobs: int = field(default_factory=lambda: cpu_count() or 1)
     defconfig: ClassVar[str] = DEFCONFIG
-    ksu: str = field(default_factory=lambda: os.getenv("KSU", "NONE"))
+    ksu: str = field(default_factory=lambda: os.getenv("KSU", ""))
+    susfs: bool = field(
+        default_factory=lambda: os.getenv("SUSFS", "false").lower() == "true"
+    )
 
     def _make(
         self, args: list[str] | None = None, *, jobs: int, out: str | Path
@@ -59,6 +62,12 @@ class Builder:
         # Enable KPM support for SukiSU
         if self.ksu == "SUKI":
             self.config("CONFIG_KPM", True)
+
+        # Config SUSFS
+        if self.susfs:
+            self.config("CONFIG_KSU_SUSFS", True)
+            self.config("CONFIG_KSU_SUSFS_SUS_SU", False)
+        else:
             self.config("CONFIG_KSU_SUSFS", False)
 
     def build(

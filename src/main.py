@@ -17,6 +17,7 @@ from src.pre_build.kpm import KPMPatcher
 from src.pre_build.lxc import LXCPatcher
 from src.pre_build.setup_env import SetupEnvironment
 from src.pre_build.ksu import KSUInstaller
+from src.pre_build.susfs import SUSFSPatcher
 from src.pre_build.variants import Variants
 from src.utils.builder import Builder
 from src.utils.fs import FileSystem
@@ -44,6 +45,7 @@ class KernelBuilder:
         self.source: SourceManager = SourceManager()
         self.lxc: LXCPatcher = LXCPatcher()
         self.kpm: KPMPatcher = KPMPatcher()
+        self.susfs: SUSFSPatcher = SUSFSPatcher()
         self.local_run: bool = os.getenv("LOCAL_RUN", "false").lower() == "true"
 
     def run_build(self) -> None:
@@ -77,6 +79,7 @@ class KernelBuilder:
 
         # Setup KSU and LXC
         self.ksu.install()
+        self.susfs.apply()
         self.lxc.apply()
 
         # Main build process

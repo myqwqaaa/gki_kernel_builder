@@ -9,6 +9,9 @@ on:
       KSU:
         type: string
         required: true
+      SUSFS:
+        type: string
+        required: true
       LXC:
         type: string
         required: true
@@ -21,8 +24,14 @@ on:
         type: choice
         options: ["NONE", "NEXT", "SUKI"]
 
+      SUSFS:
+        description: "Enable SUSFS"
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
       LXC:
-        description: "LXC"
+        description: "Enable LXC"
         default: "false"
         type: choice
         options: ["false", "true"]
@@ -32,6 +41,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Fail SUSFS requirement check
+        if: ${{ inputs.SUSFS == 'true' && inputs.KSU == 'NONE' }}
+        run: |
+          echo "Cannot use SUSFS without KernelSU"
+          exit 1
+
       - name: Checkout code & init submodules
         uses: actions/checkout@v4
         with:
@@ -59,6 +74,7 @@ jobs:
         id: setup-env
         env:
           KSU: ${{ inputs.KSU }}
+          SUSFS: ${{ inputs.SUSFS }}
           LXC: ${{ inputs.LXC }}
         run: |
           uv run python -m src.main

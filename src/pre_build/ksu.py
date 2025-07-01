@@ -14,11 +14,11 @@ class KSUInstaller:
         "SUKI": "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh",
     }
 
-    def __init__(self, variant: str | None = None) -> None:
-        self.variant: str = os.getenv("KSU", "NONE")
+    def __init__(self) -> None:
+        self.variant: str = os.getenv("KSU", "NONE").upper()
 
     def install(self) -> Proc | None:
-        variant = self.variant.upper()
+        variant: str = self.variant.upper()
         if variant == "NONE":
             return None
 
