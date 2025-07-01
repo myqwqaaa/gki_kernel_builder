@@ -99,6 +99,7 @@ jobs:
           repository: ${{ env.RELEASE_REPO }}
           name: ${{ env.RELEASE_TAG }}
           tag_name: ${{ env.RELEASE_TAG }}
+          token: ${{ secrets.GH_TOKEN }}
           prerelease: true
           files: release_files/**/*
           body: |
