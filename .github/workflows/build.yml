@@ -35,7 +35,12 @@ on:
         default: "false"
         type: choice
         options: ["false", "true"]
-
+env:
+  RICH_FORCE_COLOR: true
+  FORCE_COLOR: "1"
+  TTY_COMPATIBLE: "1"
+  TERM: xterm-256color
+  
 jobs:
   default:
     runs-on: ubuntu-latest
