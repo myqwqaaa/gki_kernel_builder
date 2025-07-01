@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+import os
 import shutil
+import zipfile
+from pathlib import Path
 from subprocess import CompletedProcess
 from typing import ClassVar, TypeAlias
-from pathlib import Path
-import zipfile
-import os
 
 from kernel_builder.config.config import (
     BOOT_SIGNING_KEY,
@@ -29,7 +29,6 @@ from kernel_builder.utils.source import SourceManager
 Proc: TypeAlias = CompletedProcess[bytes]
 
 
-# ====== Kernel Builder ======
 class KernelBuilder:
     image_path: ClassVar[Path] = (
         WORKSPACE / "out" / "arch" / "arm64" / "boot" / "Image.gz"
@@ -51,79 +50,63 @@ class KernelBuilder:
     def run_build(self) -> None:
         """
         Run the complete build process.
-
-        :return: None
         """
-
-        # ====== Setup Environment ======
         log("Setting up environment variables...")
         self.environment.setup_env()
 
-        # ====== Create Workspace ======
-        reset: list[Path] = [WORKSPACE, TOOLCHAIN, OUTPUT]
-        log(f"Resetting paths: {WORKSPACE}, {TOOLCHAIN}, {OUTPUT}")
-        for path in reset:
+        # Reset paths
+        reset_paths = [WORKSPACE, TOOLCHAIN, OUTPUT]
+        log(f"Resetting paths: {', '.join(map(str, reset_paths))}")
+        for path in reset_paths:
             self.fs.reset_path(path)
 
-        # ====== Clone Kernel & Toolchain ======
+        # Clone sources
         log("Cloning kernel and toolchain repositories...")
         self.source.clone_sources()
 
-        # Export environment variables for GitHub Actions after clone kernel
+        # Export GitHub Actions env if not local
         if not self.local_run:
             self.environment.export_github_env()
 
-        # ====== Build  ======
-        # Enter Workspace
+        # Enter workspace
         self.fs.cd(WORKSPACE)
 
-        # Setup KSU and LXC
-        self.ksu.install()
-        self.susfs.apply()
-        self.lxc.apply()
+        # Pre-build steps
+        self.variants.setup()
 
-        # Main build process
+        # Main build steps
         self.builder.build()
-
-        # ====== Patch KPM =====
         self.kpm.patch()
 
-        # ====== Build AnyKernel3 ======
+        # Build flashable
         self.build_anykernel3()
-
-        # ====== Build Boot Image ======
         self.build_boot_image()
 
-        # ====== Rename Build Artifacts ======
+        # Rename artifacts
         log("Renaming build artifacts...")
-        anykernel_path: Path = OUTPUT / "AnyKernel3.zip"
-        boot_image_path: Path = OUTPUT / "boot.img"
+        version: str | None = self.builder.get_kernel_version()
+        suffix: str = self.variants.suffix
+        anykernel_src: Path = OUTPUT / "AnyKernel3.zip"
+        boot_src: Path = OUTPUT / "boot.img"
 
-        anykernel_path.rename(
-            OUTPUT
-            / f"ESK-{self.builder.get_kernel_version()}{self.variants.suffix}-AnyKernel3.zip"
-        )
-        boot_image_path.rename(
-            OUTPUT
-            / f"ESK-{self.builder.get_kernel_version()}{self.variants.suffix}-boot.img"
-        )
+        anykernel_dest: Path = OUTPUT / f"ESK-{version}{suffix}-AnyKernel3.zip"
+        boot_dest: Path = OUTPUT / f"ESK-{version}{suffix}-boot.img"
+
+        anykernel_src.rename(anykernel_dest)
+        boot_src.rename(boot_dest)
 
     def build_anykernel3(self) -> None:
         """
-        Build a AnyKernel3 flashable zip.
-
-        :return: None
+        Build a flashable AnyKernel3 ZIP package.
         """
         log("Preparing to build AnyKernel3 package...")
 
-        _anykernel_path: Path = WORKSPACE / "AnyKernel3"
-
-        shutil.copyfile(self.image_path, _anykernel_path / "Image.gz")
-
+        ak_dir = WORKSPACE / "AnyKernel3"
+        shutil.copyfile(self.image_path, ak_dir / "Image.gz")
         shutil.make_archive(
             base_name=str(OUTPUT / "AnyKernel3"),
             format="zip",
-            root_dir=_anykernel_path,
+            root_dir=ak_dir,
             base_dir=".",
         )
 
@@ -131,43 +114,42 @@ class KernelBuilder:
 
     def build_boot_image(self) -> None:
         """
-        Build a boot image.
-
-        :return: None
+        Create and sign the boot image from the GKI release.
         """
-
         log("Starting boot image creation process...")
-        _boot_tmp: Path = WORKSPACE / "boot"
-        _unpack_bootimg: Path = TOOLCHAIN / "mkbootimg" / "unpack_bootimg.py"
-        _mkbootimg: Path = TOOLCHAIN / "mkbootimg" / "mkbootimg.py"
-        _avbtool: Path = TOOLCHAIN / "build-tools" / "linux-x86" / "bin" / "avbtool"
 
-        self.fs.reset_path(_boot_tmp)  # Create a temp folder to build boot image
-        self.fs.cd(_boot_tmp)
+        boot_tmp = WORKSPACE / "boot"
+        unpacker = TOOLCHAIN / "mkbootimg" / "unpack_bootimg.py"
+        maker = TOOLCHAIN / "mkbootimg" / "mkbootimg.py"
+        avbtool = TOOLCHAIN / "build-tools" / "linux-x86" / "bin" / "avbtool"
 
+        # Prepare temp directory
+        self.fs.reset_path(boot_tmp)
+        self.fs.cd(boot_tmp)
+
+        # Download and extract GKI
         log(f"Downloading GKI image from {GKI_URL}...")
-        self.shell.run(["wget", "-qO", str(_boot_tmp / "gki.zip"), GKI_URL])
-
-        with zipfile.ZipFile(_boot_tmp / "gki.zip", "r") as zip:
-            zip.extractall(_boot_tmp)
+        self.shell.run(["wget", "-qO", str(boot_tmp / "gki.zip"), GKI_URL])
+        with zipfile.ZipFile(boot_tmp / "gki.zip", "r") as z:
+            z.extractall(boot_tmp)
 
         log("Unpacking boot image...")
         self.shell.run(
             [
                 "python3",
-                str(_unpack_bootimg),
-                f"--boot_img={str(_boot_tmp / 'boot-5.10.img')}",
+                str(unpacker),
+                f"--boot_img={boot_tmp / 'boot-5.10.img'}",
             ]
         )
 
         log("Copying kernel image to boot directory...")
-        shutil.copyfile(self.image_path, _boot_tmp / "Image.gz")
+        shutil.copyfile(self.image_path, boot_tmp / "Image.gz")
 
-        log("Rebuilding boot.img using mkbootimg.py...")
+        log("Rebuilding boot.img with mkbootimg.py...")
         self.shell.run(
             [
                 "python3",
-                str(_mkbootimg),
+                str(maker),
                 "--header_version",
                 "4",
                 "--kernel",
@@ -183,10 +165,11 @@ class KernelBuilder:
             ]
         )
 
+        # Sign the image
         log("Signing boot.img with avbtool...")
         self.shell.run(
             [
-                str(_avbtool),
+                str(avbtool),
                 "add_hash_footer",
                 "--partition_name",
                 "boot",
@@ -201,10 +184,9 @@ class KernelBuilder:
             ]
         )
 
-        shutil.move(_boot_tmp / "boot.img", OUTPUT / "boot.img")
+        shutil.move(boot_tmp / "boot.img", OUTPUT / "boot.img")
         log(f"Boot image created at {OUTPUT}")
 
 
 if __name__ == "__main__":
-    build: KernelBuilder = KernelBuilder()
-    build.run_build()
+    KernelBuilder().run_build()

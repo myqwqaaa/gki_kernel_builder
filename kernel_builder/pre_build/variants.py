@@ -1,21 +1,28 @@
 import os
 
+from kernel_builder.pre_build.ksu import KSUInstaller
+from kernel_builder.pre_build.lxc import LXCPatcher
+from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.utils.log import log
 from dataclasses import dataclass, field
 
 
 @dataclass(slots=True)
 class Variants:
-    ksu: str = field(default_factory=lambda: os.getenv("KSU", "NONE"))
-    lxc: bool = field(
+    ksu: KSUInstaller = KSUInstaller()
+    susfs: SUSFSPatcher = SUSFSPatcher()
+    lxc: LXCPatcher = LXCPatcher()
+
+    ksu_variant: str = field(default_factory=lambda: os.getenv("KSU", "NONE"))
+    use_lxc: bool = field(
         default_factory=lambda: os.getenv("LXC", "false").lower() == "true"
     )
-    susfs: bool = os.getenv("SUSFS", "false").lower() == "true"
+    use_susfs: bool = os.getenv("SUSFS", "false").lower() == "true"
 
     @property
     def variant_name(self) -> list[str]:
         result: list[str] = []
-        k: str = self.ksu.upper()
+        k: str = self.ksu_variant.upper()
 
         if k == "NONE":
             result = ["Non-KSU"]
@@ -27,13 +34,18 @@ class Variants:
             log(f"Unknown KernelSU variant {self.ksu!r}", "error")
             return ["UNKNOWN"]
 
-        if self.susfs:
+        if self.use_susfs:
             result.append("SUSFS")
 
-        if self.lxc:
+        if self.use_lxc:
             result.append("LXC")
         return result
 
     @property
     def suffix(self) -> str:
         return f"-{'-'.join(self.variant_name)}" if self.variant_name else "-UNKNOWN"
+
+    def setup(self) -> None:
+        self.ksu.install()
+        self.susfs.apply()
+        self.lxc.apply()
