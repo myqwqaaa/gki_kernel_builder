@@ -2,7 +2,7 @@ from logging import Logger
 import logging
 from rich.logging import RichHandler
 from pathlib import Path
-from src.config.config import LOGFILE
+from kernel_builder.config.config import LOGFILE
 
 logger: Logger = logging.getLogger(__name__)
 

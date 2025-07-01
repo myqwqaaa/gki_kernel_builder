@@ -1,6 +1,6 @@
 import os
 
-from src.utils.log import log
+from kernel_builder.utils.log import log
 from dataclasses import dataclass, field
 
 

@@ -77,7 +77,7 @@ jobs:
           SUSFS: ${{ inputs.SUSFS }}
           LXC: ${{ inputs.LXC }}
         run: |
-          uv run python -m src.main
+          uv run python -m kernel_builder.main
 
       - name: Upload final artifacts
         uses: actions/upload-artifact@v4

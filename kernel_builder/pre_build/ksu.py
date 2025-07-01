@@ -2,7 +2,7 @@ import subprocess
 import os
 
 from subprocess import CompletedProcess
-from src.utils.log import log
+from kernel_builder.utils.log import log
 from typing import TypeAlias
 
 Proc: TypeAlias = CompletedProcess[bytes]

@@ -2,7 +2,7 @@
 import os
 from typing import Final
 from pathlib import Path
-from src.config.config import (
+from kernel_builder.config.config import (
     BUILD_HOST,
     BUILD_USER,
     TOOLCHAIN,
@@ -10,8 +10,8 @@ from src.config.config import (
     CROSS_COMPILE,
     OUTPUT,
 )
-from src.utils.builder import Builder
-from src.pre_build.variants import Variants
+from kernel_builder.utils.builder import Builder
+from kernel_builder.pre_build.variants import Variants
 
 
 class SetupEnvironment:

@@ -1,5 +1,5 @@
 import os
-from src.main import KernelBuilder
+from kernel_builder.main import KernelBuilder
 
 
 def run() -> None:

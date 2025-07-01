@@ -3,7 +3,7 @@ import os
 
 from subprocess import CompletedProcess
 from typing import TypeAlias
-from src.utils.log import log
+from kernel_builder.utils.log import log
 from pathlib import Path
 
 Proc: TypeAlias = CompletedProcess[bytes]

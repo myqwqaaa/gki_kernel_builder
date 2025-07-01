@@ -5,10 +5,10 @@ import subprocess
 
 from typing import ClassVar
 from pathlib import Path
-from src.utils.fs import FileSystem
-from src.utils.log import log
-from src.config.config import WORKSPACE
-from src.utils.shell import Shell
+from kernel_builder.utils.fs import FileSystem
+from kernel_builder.utils.log import log
+from kernel_builder.config.config import WORKSPACE
+from kernel_builder.utils.shell import Shell
 
 
 class KPMPatcher:

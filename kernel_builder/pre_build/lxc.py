@@ -1,9 +1,9 @@
 import os
 
 from subprocess import CompletedProcess
-from src.config.config import PATCHES
-from src.utils.shell import Shell
-from src.utils.log import log
+from kernel_builder.config.config import PATCHES
+from kernel_builder.utils.shell import Shell
+from kernel_builder.utils.log import log
 from typing import Final, TypeAlias
 from pathlib import Path
 

@@ -1,7 +1,7 @@
 [project]
-name = "gki-kernel-builder"
+name = "kernel_builder"
 version = "0.1.0"
-description = "A simple python gki kernel builder"
+description = "A python gki kernel builder"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [tool.basedpyright]
-include = ["src"]
+include = ["kernel_builder"]
 typeCheckingMode = "recommended"
 reportUnusedCallResult = "none"
 reportAny = "none"

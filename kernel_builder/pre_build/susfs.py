@@ -2,9 +2,9 @@ import shutil
 import os
 
 from subprocess import CompletedProcess
-from src.config.config import PATCHES, WORKSPACE
-from src.utils.shell import Shell
-from src.utils.log import log
+from kernel_builder.config.config import PATCHES, WORKSPACE
+from kernel_builder.utils.shell import Shell
+from kernel_builder.utils.log import log
 from typing import Final, TypeAlias
 from pathlib import Path
 

@@ -5,9 +5,9 @@ from os import cpu_count
 from subprocess import CompletedProcess
 from pathlib import Path
 from dataclasses import dataclass, field
-from src.config.config import WORKSPACE, DEFCONFIG
-from src.utils.shell import Shell
-from src.utils.log import log
+from kernel_builder.config.config import WORKSPACE, DEFCONFIG
+from kernel_builder.utils.shell import Shell
+from kernel_builder.utils.log import log
 from typing import ClassVar, TypeAlias
 
 Proc: TypeAlias = CompletedProcess[bytes]

@@ -30,4 +30,3 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v6.0.1
         with:
           commit_message: "[skip ci] style(src): pre-commit hook"
-          file_pattern: src/**

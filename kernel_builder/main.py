@@ -6,24 +6,24 @@ from pathlib import Path
 import zipfile
 import os
 
-from src.config.config import (
+from kernel_builder.config.config import (
     BOOT_SIGNING_KEY,
     GKI_URL,
     OUTPUT,
     TOOLCHAIN,
     WORKSPACE,
 )
-from src.pre_build.kpm import KPMPatcher
-from src.pre_build.lxc import LXCPatcher
-from src.pre_build.setup_env import SetupEnvironment
-from src.pre_build.ksu import KSUInstaller
-from src.pre_build.susfs import SUSFSPatcher
-from src.pre_build.variants import Variants
-from src.utils.builder import Builder
-from src.utils.fs import FileSystem
-from src.utils.log import log
-from src.utils.shell import Shell
-from src.utils.source import SourceManager
+from kernel_builder.pre_build.kpm import KPMPatcher
+from kernel_builder.pre_build.lxc import LXCPatcher
+from kernel_builder.pre_build.setup_env import SetupEnvironment
+from kernel_builder.pre_build.ksu import KSUInstaller
+from kernel_builder.pre_build.susfs import SUSFSPatcher
+from kernel_builder.pre_build.variants import Variants
+from kernel_builder.utils.builder import Builder
+from kernel_builder.utils.fs import FileSystem
+from kernel_builder.utils.log import log
+from kernel_builder.utils.shell import Shell
+from kernel_builder.utils.source import SourceManager
 
 # ====== Typing Aliases ======
 Proc: TypeAlias = CompletedProcess[bytes]

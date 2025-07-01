@@ -4,7 +4,7 @@ import shutil
 from requests import Response
 from pathlib import Path
 from typing import Any
-from src.utils.log import log
+from kernel_builder.utils.log import log
 
 
 def fetch_latest(user: str, repo: str, asset: str, dest: Path) -> None:

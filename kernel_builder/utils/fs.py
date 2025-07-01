@@ -1,6 +1,6 @@
 import shutil
 
-from src.utils.log import log
+from kernel_builder.utils.log import log
 from pathlib import Path
 from os import chdir
 

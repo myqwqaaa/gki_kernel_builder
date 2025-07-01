@@ -2,10 +2,10 @@ import requests
 
 from dataclasses import dataclass, field
 from subprocess import CompletedProcess
-from src.config.manifest import SOURCES
-from src.utils.shell import Shell
+from kernel_builder.config.manifest import SOURCES
+from kernel_builder.utils.shell import Shell
 from urllib.parse import ParseResult, urlparse, urlunparse
-from src.utils.log import log
+from kernel_builder.utils.log import log
 from typing import TypeAlias
 
 Proc: TypeAlias = CompletedProcess[bytes]
