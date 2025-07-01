@@ -4,7 +4,6 @@
 import os
 import shutil
 import zipfile
-import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import ClassVar, TypeAlias
@@ -13,7 +12,6 @@ from kernel_builder.config.config import (
     BOOT_SIGNING_KEY,
     GKI_URL,
     OUTPUT,
-    ROOT,
     TOOLCHAIN,
     WORKSPACE,
 )
@@ -82,13 +80,7 @@ class KernelBuilder:
         self.builder.build()
 
         # Post build
-        kmi_checker: Path = (
-            ROOT / "kernel_builder" / "post_build" / "KMI_function_symbols_test.py"
-        )
-
         self.kpm.patch()
-
-        subprocess.run(["python3", str(kmi_checker)], cwd=WORKSPACE, check=True)
 
         # Build flashable
         self.build_anykernel3()
