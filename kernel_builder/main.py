@@ -4,6 +4,7 @@
 import os
 import shutil
 import zipfile
+import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import ClassVar, TypeAlias
@@ -86,7 +87,8 @@ class KernelBuilder:
         )
 
         self.kpm.patch()
-        self.shell.run(["python3", str(kmi_checker)])
+
+        subprocess.run(["python3", str(kmi_checker)], cwd=WORKSPACE, check=True)
 
         # Build flashable
         self.build_anykernel3()
