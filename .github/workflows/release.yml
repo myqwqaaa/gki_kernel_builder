@@ -74,10 +74,19 @@ jobs:
         with:
           path: release_files
 
+        
+      - name: Setup env
+        run: |
+          RELEASE_REPO="bachnxuan/android12-5.10-lts"
+          BRANCH_TAG="android12-5.10-lts"
+          
+          echo "RELEASE_REPO=${RELEASE_REPO}" >> $GITHUB_ENV
+          echo "BRANCH_TAG=${BRANCH_TAG}" >> $GITHUB_ENV
+          
       - name: Generate new tag
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          RELEASE_REPO: "bachnxuan/android12-5.10-lts"
+          RELEASE_REPO: ${{ env.RELEASE_REPO }}
         run: |
           LATEST_TAG=$(gh api repos/$RELEASE_REPO/tags \
            --header "Authorization: token $GH_TOKEN" \
@@ -90,7 +99,6 @@ jobs:
           fi
 
           echo "New tag: $RELEASE_TAG"
-          echo "RELEASE_REPO=${RELEASE_REPO}" >> $GITHUB_ENV
           echo "RELEASE_TAG=${RELEASE_TAG}" >> $GITHUB_ENV
 
       - name: Upload builds to release
@@ -100,8 +108,10 @@ jobs:
           name: ${{ env.RELEASE_TAG }}
           tag_name: ${{ env.RELEASE_TAG }}
           token: ${{ secrets.GH_TOKEN }}
-          prerelease: true
-          files: release_files/**/*
           body: |
-            ## 📢 ESK KERNEL {{ env.RELEASE_TAG }}
+            ## 📢 ESK KERNEL
+          prerelease: true
+          generate_release_notes: true
+          target_commitish: ${{ env.BRANCH_TAG }}
+          files: release_files/**/*
 
