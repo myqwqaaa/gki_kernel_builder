@@ -6,7 +6,7 @@ from kernel_builder.main import KernelBuilder
 
 
 def run() -> None:
-    KSU: str = input("Choose KernelSU Variant (NONE, NEXT, SUKI): ").upper()
+    KSU: str = input("Choose KernelSU Variant (NONE, NEXT, SUKI, RKSU): ").upper()
     SUSFS: str = str(
         input("Apply SUSFS patch (Required)(Y/n): ").lower() == "y"
     ).lower()

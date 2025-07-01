@@ -51,7 +51,7 @@ git lfs install
    uv run python3 run.py
 
    # Non-interactive mode
-   KSU=<NONE|NEXT|SUKI> SUSFS=<true|false> LXC=<true|false> LOCAL_RUN="true" uv run python3 -m src.main
+   KSU=<NONE|NEXT|SUKI|RKSU> SUSFS=<true|false> LXC=<true|false> LOCAL_RUN="true" uv run python3 -m src.main
    ```
 
 4. **Retrieve artifacts**:
