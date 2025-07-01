@@ -37,3 +37,7 @@ class KSUInstaller:
             input=curl.stdout,
             check=True,
         )
+
+
+if __name__ == "__main__":
+    raise SystemExit("This file is meant to be imported, not executed.")

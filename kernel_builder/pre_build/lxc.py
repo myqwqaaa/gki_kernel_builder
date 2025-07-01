@@ -31,3 +31,7 @@ class LXCPatcher:
             return self.shell.patch(str(LXC))
         else:
             return
+
+
+if __name__ == "__main__":
+    raise SystemExit("This file is meant to be imported, not executed.")

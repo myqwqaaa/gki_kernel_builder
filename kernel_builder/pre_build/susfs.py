@@ -53,3 +53,7 @@ class SUSFSPatcher:
             os.chdir(WORKSPACE / "KernelSU-Next")
             self.shell.patch(KSUN_SUSFS)
             os.chdir(orig_cwd)
+
+
+if __name__ == "__main__":
+    raise SystemExit("This file is meant to be imported, not executed.")

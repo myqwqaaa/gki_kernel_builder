@@ -1,12 +1,12 @@
-from logging import Logger
 import logging
+
+from pathlib import Path
+from logging import Logger
 from rich.logging import RichHandler
 from rich.console import Console
-from pathlib import Path
 from kernel_builder.config.config import LOGFILE
 
 logger: Logger = logging.getLogger(__name__)
-
 console: Console = Console(force_terminal=True, color_system="truecolor")
 
 
@@ -25,6 +25,8 @@ def _configure_log(
 
     handlers: list[logging.Handler] = [
         RichHandler(
+            console=console,
+            omit_repeated_times=False,
             show_time=True,
             show_level=True,
             show_path=False,
@@ -38,6 +40,7 @@ def _configure_log(
     logging.basicConfig(
         level=level,
         format="%(message)s",
+        datefmt="[%X]",
         handlers=handlers,
     )
 
