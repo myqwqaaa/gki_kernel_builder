@@ -40,7 +40,7 @@ env:
   FORCE_COLOR: "1"
   TTY_COMPATIBLE: "1"
   TERM: xterm-256color
-  
+
 jobs:
   default:
     runs-on: ubuntu-latest
