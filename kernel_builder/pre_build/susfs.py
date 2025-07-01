@@ -5,7 +5,7 @@ from subprocess import CompletedProcess
 from kernel_builder.config.config import PATCHES, WORKSPACE
 from kernel_builder.utils.shell import Shell
 from kernel_builder.utils.log import log
-from typing import Final, TypeAlias
+from typing import TypeAlias
 from pathlib import Path
 
 
@@ -13,10 +13,6 @@ Proc: TypeAlias = CompletedProcess[bytes]
 
 
 class SUSFSPatcher:
-    PATCH_URL: Final[str] = (
-        "https://raw.githubusercontent.com/bachnxuan/kernel_patches/refs/heads/master/lxc_support.patch"
-    )
-
     def __init__(self) -> None:
         self.shell: Shell = Shell()
         self.ksu_variant: str = os.getenv("KSU", "NONE").upper()
