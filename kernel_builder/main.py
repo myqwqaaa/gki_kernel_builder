@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# encoding: utf-8
+
 import os
 import shutil
 import zipfile
@@ -10,10 +12,11 @@ from kernel_builder.config.config import (
     BOOT_SIGNING_KEY,
     GKI_URL,
     OUTPUT,
+    ROOT,
     TOOLCHAIN,
     WORKSPACE,
 )
-from kernel_builder.pre_build.kpm import KPMPatcher
+from kernel_builder.post_build.kpm import KPMPatcher
 from kernel_builder.pre_build.lxc import LXCPatcher
 from kernel_builder.pre_build.setup_env import SetupEnvironment
 from kernel_builder.pre_build.ksu import KSUInstaller
@@ -76,7 +79,14 @@ class KernelBuilder:
 
         # Main build steps
         self.builder.build()
+
+        # Post build
+        kmi_checker: Path = (
+            ROOT / "kernel_builder" / "post_build" / "KMI_function_symbols_test.py"
+        )
+
         self.kpm.patch()
+        self.shell.run(["python3", str(kmi_checker)])
 
         # Build flashable
         self.build_anykernel3()
