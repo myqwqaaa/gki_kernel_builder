@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 import requests
 import shutil
 import gzip
@@ -27,7 +28,8 @@ class KPMPatcher:
             dest.open("wb") as fdest,
         ):
             resp.raise_for_status()
-            for chunk in resp.iter_content(chunk_size=8_192):
+            chunks: Iterator[bytes] = resp.iter_content(chunk_size=8_192)
+            for chunk in chunks:
                 if chunk:
                     fdest.write(chunk)
         log(f"Saved {url} to {dest}")

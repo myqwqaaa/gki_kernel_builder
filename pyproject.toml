@@ -16,5 +16,4 @@ dependencies = [
 include = ["kernel_builder"]
 typeCheckingMode = "recommended"
 reportUnusedCallResult = "none"
-reportAny = "none"
-reportExplicitAny = "none"
+pythonPlatform = "Linux"
