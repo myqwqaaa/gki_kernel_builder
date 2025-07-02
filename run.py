@@ -2,15 +2,21 @@
 # encoding: utf-8
 
 import os
+import sys
+from kernel_builder.utils.log import log
 from kernel_builder.main import KernelBuilder
 
 
 def run() -> None:
     KSU: str = input("Choose KernelSU Variant (NONE, NEXT, SUKI, RKSU): ").upper()
     SUSFS: str = str(
-        input("Apply SUSFS patch (Required)(Y/n): ").lower() == "y"
+        input("Apply SUSFS patch (Required KSU != NONE) (Y/n): ").lower() == "y"
     ).lower()
     LXC: str = str(input("Apply LXC patch (Y/n): ").lower() == "y").lower()
+
+    if KSU == "NONE" and SUSFS == "true":
+        log("SUSFS required KernelSU != NONE", "error")
+        sys.exit(-1)
 
     os.environ["KSU"] = KSU
     os.environ["SUSFS"] = SUSFS

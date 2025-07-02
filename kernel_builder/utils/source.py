@@ -1,6 +1,3 @@
-from re import Pattern
-
-
 import re
 import requests
 
@@ -11,6 +8,7 @@ from kernel_builder.utils.shell import Shell
 from urllib.parse import ParseResult, urlparse, urlunparse
 from kernel_builder.utils.log import log
 from typing import TypeAlias
+from re import Pattern
 
 Proc: TypeAlias = CompletedProcess[bytes]
 
