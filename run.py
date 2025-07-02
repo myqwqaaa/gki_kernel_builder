@@ -14,6 +14,7 @@ def run() -> None:
 
     if KSU == "NONE" and SUSFS == "true":
         from kernel_builder.utils.log import log
+
         log("SUSFS required KernelSU != NONE", "error")
         sys.exit(-1)
 
@@ -23,6 +24,7 @@ def run() -> None:
     os.environ["LOCAL_RUN"] = "true"
 
     from kernel_builder.main import KernelBuilder
+
     KernelBuilder().run_build()
 
 
