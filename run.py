@@ -3,8 +3,6 @@
 
 import os
 import sys
-from kernel_builder.utils.log import log
-from kernel_builder.main import KernelBuilder
 
 
 def run() -> None:
@@ -15,6 +13,7 @@ def run() -> None:
     LXC: str = str(input("Apply LXC patch (Y/n): ").lower() == "y").lower()
 
     if KSU == "NONE" and SUSFS == "true":
+        from kernel_builder.utils.log import log
         log("SUSFS required KernelSU != NONE", "error")
         sys.exit(-1)
 
@@ -23,6 +22,7 @@ def run() -> None:
     os.environ["LXC"] = LXC
     os.environ["LOCAL_RUN"] = "true"
 
+    from kernel_builder.main import KernelBuilder
     KernelBuilder().run_build()
 
 
