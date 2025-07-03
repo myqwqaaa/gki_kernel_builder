@@ -193,4 +193,7 @@ class KernelBuilder:
 
 
 if __name__ == "__main__":
-    KernelBuilder().run_build()
+    try:
+        KernelBuilder().run_build()
+    except Exception as err:
+        log(str(err), "error")
