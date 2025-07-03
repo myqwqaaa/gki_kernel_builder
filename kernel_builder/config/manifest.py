@@ -4,7 +4,7 @@ from typing import Final
 
 KERNEL: Final[dict[str, str]] = {
     "url": "github.com:bachnxuan/android12-5.10-lts",
-    "branch": "android12-5.10-lts",
+    "branch": "esk/main",
     "to": str(WORKSPACE),
 }
 
