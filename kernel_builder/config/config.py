@@ -9,7 +9,7 @@ TOOLCHAIN: Final[Path] = ROOT / "toolchain"
 PATCHES: Final[Path] = ROOT / "kernel_patches"
 
 # ====== Build ======
-DEFCONFIG: Final[str] = "esk_defconfig"
+DEFCONFIG: Final[str] = "gki_defconfig"
 BUILD_USER: Final[str] = "gki-builder"
 BUILD_HOST: Final[str] = "esk"
 
