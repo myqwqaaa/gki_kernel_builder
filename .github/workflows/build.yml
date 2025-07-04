@@ -73,7 +73,7 @@ jobs:
           sudo apt-get install -qq bc bison ccache curl flex git tar wget
 
           uv venv
-          uv sync
+          uv sync --frozen --no-install-project
 
       - name: Build
         id: setup-env

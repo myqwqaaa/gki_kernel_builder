@@ -34,7 +34,7 @@ jobs:
       - name: Create venv & Install dependencies
         run: |
           uv venv
-          uv sync
+          uv sync --frozen --no-install-project
 
       - name: Run pre-commit hook
         run: uv run pre-commit run --all-files --show-diff-on-failure --color=always || true

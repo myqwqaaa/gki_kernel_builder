@@ -7,13 +7,20 @@ requires-python = ">=3.12"
 dependencies = [
     "basedpyright>=1.29.4",
     "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
     "requests>=2.32.4",
     "rich>=14.0.0",
     "ruff>=0.12.0",
 ]
 
+[tool.ruff]
+extend-exclude = ["test"]
+
 [tool.basedpyright]
 include = ["kernel_builder"]
+exclude = ["test"]
 typeCheckingMode = "recommended"
 reportUnusedCallResult = "none"
 pythonPlatform = "Linux"
