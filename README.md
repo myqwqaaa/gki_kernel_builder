@@ -1,4 +1,5 @@
 # GKI Kernel Builder
+[![codecov](https://codecov.io/gh/bachnxuan/gki_kernel_builder/graph/badge.svg?token=EYKHK1OOC4)](https://codecov.io/gh/bachnxuan/gki_kernel_builder)
 
 Effortlessly building Android Generic Kernel Image (GKI).
 
