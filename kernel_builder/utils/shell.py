@@ -23,6 +23,7 @@ class Shell:
         return subprocess.run(command, check=True, env=os.environ)
 
     def patch(self, patch: str | Path) -> Proc:
+        log(f"Patching file: {patch}")
         with open(patch, "rb") as f:
             return subprocess.run(
                 ["patch", "-p1", "--forward", "--fuzz=3"], input=f.read(), check=True
