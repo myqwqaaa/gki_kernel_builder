@@ -1,8 +1,7 @@
-import os
-
 from kernel_builder.pre_build.ksu import KSUInstaller
 from kernel_builder.pre_build.lxc import LXCPatcher
 from kernel_builder.pre_build.susfs import SUSFSPatcher
+from kernel_builder.utils import env
 from kernel_builder.utils.log import log
 from dataclasses import dataclass, field
 
@@ -13,11 +12,9 @@ class Variants:
     susfs: SUSFSPatcher = SUSFSPatcher()
     lxc: LXCPatcher = LXCPatcher()
 
-    ksu_variant: str = field(default_factory=lambda: os.getenv("KSU", "NONE"))
-    use_lxc: bool = field(
-        default_factory=lambda: os.getenv("LXC", "false").lower() == "true"
-    )
-    use_susfs: bool = os.getenv("SUSFS", "false").lower() == "true"
+    ksu_variant: str = field(default_factory=env.ksu_variant)
+    use_lxc: bool = field(default_factory=env.lxc_enabled)
+    use_susfs: bool = field(default_factory=env.susfs_enabled)
 
     @property
     def variant_name(self) -> list[str]:

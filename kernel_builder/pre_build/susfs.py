@@ -3,6 +3,7 @@ import os
 
 from subprocess import CompletedProcess
 from kernel_builder.config.config import PATCHES, WORKSPACE
+from kernel_builder.utils.env import ksu_variant, susfs_enabled
 from kernel_builder.utils.shell import Shell
 from kernel_builder.utils.log import log
 from typing import TypeAlias
@@ -15,8 +16,8 @@ Proc: TypeAlias = CompletedProcess[bytes]
 class SUSFSPatcher:
     def __init__(self) -> None:
         self.shell: Shell = Shell()
-        self.ksu_variant: str = os.getenv("KSU", "NONE").upper()
-        self.susfs: bool = os.getenv("SUSFS", "false").lower() == "true"
+        self.ksu_variant: str = ksu_variant()
+        self.susfs: bool = susfs_enabled()
 
     def copy(self, src: Path, dest: Path):
         log(f"Copying content from folder {src} to {dest}")

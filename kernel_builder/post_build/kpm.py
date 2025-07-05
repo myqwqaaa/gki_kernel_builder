@@ -1,5 +1,3 @@
-from collections.abc import Iterator
-import requests
 import shutil
 import gzip
 import subprocess
@@ -9,6 +7,7 @@ from pathlib import Path
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.config.config import WORKSPACE
+from kernel_builder.utils.net import Net
 from kernel_builder.utils.shell import Shell
 
 
@@ -20,19 +19,7 @@ class KPMPatcher:
     def __init__(self) -> None:
         self.shell: Shell = Shell()
         self.fs: FileSystem = FileSystem()
-
-    def fetch(self, url: str, dest: Path) -> None:
-        log(f"Fetching {url} to {dest}")
-        with (
-            requests.get(url, stream=True, allow_redirects=True) as resp,
-            dest.open("wb") as fdest,
-        ):
-            resp.raise_for_status()
-            chunks: Iterator[bytes] = resp.iter_content(chunk_size=8_192)
-            for chunk in chunks:
-                if chunk:
-                    fdest.write(chunk)
-        log(f"Saved {url} to {dest}")
+        self.net: Net = Net()
 
     def patch(self) -> None:
         cwd: Path = Path.cwd()
@@ -49,7 +36,7 @@ class KPMPatcher:
 
             for name, url in assets.items():
                 dest: Path = temp / name
-                self.fetch(url, dest)
+                self.net.stream_to_file(url, dest)
                 dest.chmod(0o755)
 
             gz_in: Path = temp / "Image.gz"

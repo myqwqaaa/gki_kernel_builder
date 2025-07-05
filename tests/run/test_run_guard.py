@@ -1,8 +1,8 @@
-from types import SimpleNamespace
-from pytest_mock.plugin import MockType
 import pytest
 import types
 import run
+from types import SimpleNamespace
+from pytest_mock.plugin import MockType
 from pytest_mock import MockerFixture
 
 

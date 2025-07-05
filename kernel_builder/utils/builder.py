@@ -1,4 +1,3 @@
-import os
 import re
 
 from os import cpu_count
@@ -6,6 +5,7 @@ from subprocess import CompletedProcess
 from pathlib import Path
 from dataclasses import dataclass, field
 from kernel_builder.config.config import WORKSPACE, DEFCONFIG
+from kernel_builder.utils import env
 from kernel_builder.utils.shell import Shell
 from kernel_builder.utils.log import log
 from typing import ClassVar, TypeAlias
@@ -20,10 +20,8 @@ class Builder:
     workspace: ClassVar[Path] = WORKSPACE
     jobs: int = field(default_factory=lambda: cpu_count() or 1)
     defconfig: ClassVar[str] = DEFCONFIG
-    ksu: str = field(default_factory=lambda: os.getenv("KSU", ""))
-    susfs: bool = field(
-        default_factory=lambda: os.getenv("SUSFS", "false").lower() == "true"
-    )
+    ksu_variant: str = field(default_factory=env.ksu_variant)
+    use_susfs: bool = field(default_factory=env.susfs_enabled)
 
     def _make(
         self, args: list[str] | None = None, *, jobs: int, out: str | Path
@@ -60,11 +58,11 @@ class Builder:
         self.config("CONFIG_KSU_KPROBES_HOOK", False)
 
         # Enable KPM support for SukiSU
-        if self.ksu == "SUKI":
+        if self.ksu_variant == "SUKI":
             self.config("CONFIG_KPM", True)
 
         # Config SUSFS
-        if self.susfs:
+        if self.use_susfs:
             self.config("CONFIG_KSU_SUSFS", True)
             self.config("CONFIG_KSU_SUSFS_SUS_SU", False)
         else:
@@ -81,7 +79,7 @@ class Builder:
         )
         self._make([self.defconfig], jobs=(jobs or self.jobs), out=out)
 
-        if self.ksu != "NONE":
+        if self.ksu_variant != "NONE":
             self._ksu_configurator()
             log("Making oldefconfig")
             self.shell.run(["make", "olddefconfig", f"O={out}"])

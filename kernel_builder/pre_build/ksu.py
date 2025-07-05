@@ -1,10 +1,10 @@
 import subprocess
-import os
-import requests
 
 from subprocess import CompletedProcess
 from kernel_builder.utils.log import log
+from kernel_builder.utils.net import Net
 from kernel_builder.utils.source import SourceManager
+from kernel_builder.utils import env
 from typing import TypeAlias
 
 Proc: TypeAlias = CompletedProcess[bytes]
@@ -18,8 +18,9 @@ class KSUInstaller:
 
     def __init__(self) -> None:
         self.source: SourceManager = SourceManager()
-        self.variant: str = os.getenv("KSU", "NONE").upper()
-        self.use_susfs: bool = os.getenv("SUSFS", "false").lower() == "true"
+        self.net: Net = Net()
+        self.variant: str = env.ksu_variant()
+        self.use_susfs: bool = env.susfs_enabled()
 
     def _install_ksu(self, url: str, ref: str | None) -> Proc:
         if not self.source.is_simplified(url):
@@ -27,9 +28,7 @@ class KSUInstaller:
 
         if not ref:
             user, repo = url.split(":", 1)
-            api: str = f"https://api.github.com/repos/{user}/{repo}/tags"
-            data: list[dict[str, str]] = requests.get(api).json()
-            ref = data[0]["name"]  # Latest tag
+            ref = self.net.fetch_latest_tag(user, repo)
 
         setup_url = f"https://raw.githubusercontent.com/{url.split(':', 1)[1]}/{ref}/kernel/setup.sh"
 

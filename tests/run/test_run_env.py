@@ -12,9 +12,6 @@ import run
 def test_env_var(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> None:
     fake: MockType = mocker.patch("kernel_builder.main.KernelBuilder", autospec=True)
 
-    for var in ("KSU", "SUSFS", "LXC", "LOCAL_RUN"):
-        monkeypatch.delenv(var, raising=False)
-
     ns = types.SimpleNamespace(command="build", ksu="NEXT", susfs=False, lxc=True)
 
     run.cmd_build(ns)

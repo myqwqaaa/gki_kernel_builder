@@ -1,6 +1,4 @@
 from pytest_mock.plugin import MockType
-import types
-from pathlib import Path
 import importlib
 import pytest
 from pytest_mock import MockerFixture
