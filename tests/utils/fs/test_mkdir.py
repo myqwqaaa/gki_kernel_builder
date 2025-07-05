@@ -1,8 +1,9 @@
+from pathlib import Path
 from kernel_builder.utils.fs import FileSystem
 
 
-def test_mkdir(tmp_path):
-    p = tmp_path / "deep" / "nest" / "out"
+def test_mkdir(tmp_path: Path):
+    p: Path = tmp_path / "deep" / "nest" / "out"
 
     fs = FileSystem()
     fs.mkdir(p)

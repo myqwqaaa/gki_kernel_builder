@@ -1,10 +1,16 @@
+from pytest_mock.plugin import MockType
+
+
 import os
 import types
+
+from pytest import MonkeyPatch
+from pytest_mock import MockerFixture
 import run
 
 
-def test_env_var(mocker, monkeypatch) -> None:
-    fake = mocker.patch("kernel_builder.main.KernelBuilder", autospec=True)
+def test_env_var(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> None:
+    fake: MockType = mocker.patch("kernel_builder.main.KernelBuilder", autospec=True)
 
     for var in ("KSU", "SUSFS", "LXC", "LOCAL_RUN"):
         monkeypatch.delenv(var, raising=False)

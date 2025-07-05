@@ -16,11 +16,11 @@ dependencies = [
 ]
 
 [tool.ruff]
-extend-exclude = ["test"]
+extend-exclude = ["tests"]
 
 [tool.basedpyright]
 include = ["kernel_builder"]
-exclude = ["test"]
+exclude = ["tests"]
 typeCheckingMode = "recommended"
 reportUnusedCallResult = "none"
 pythonPlatform = "Linux"
