@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-import os
 import shutil
 import zipfile
 from pathlib import Path
@@ -21,7 +20,8 @@ from kernel_builder.pre_build.setup_env import SetupEnvironment
 from kernel_builder.pre_build.ksu import KSUInstaller
 from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.pre_build.variants import Variants
-from kernel_builder.utils.builder import Builder
+from kernel_builder.utils import env
+from kernel_builder.utils.build import Builder
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.utils.shell import Shell
@@ -47,7 +47,7 @@ class KernelBuilder:
         self.lxc: LXCPatcher = LXCPatcher()
         self.kpm: KPMPatcher = KPMPatcher()
         self.susfs: SUSFSPatcher = SUSFSPatcher()
-        self.local_run: bool = os.getenv("LOCAL_RUN", "false").lower() == "true"
+        self.local_run: bool = env.local_run()
 
     def run_build(self) -> None:
         """

@@ -1,18 +1,19 @@
-import subprocess
 import os
-
-from subprocess import CompletedProcess
-from typing import TypeAlias
-from kernel_builder.utils.log import log
+import subprocess
 from pathlib import Path
-
-Proc: TypeAlias = CompletedProcess[bytes]
+from subprocess import CompletedProcess
+from kernel_builder.utils.fs import FileSystem
+from kernel_builder.utils.log import log
+from kernel_builder.config.config import ROOT
 
 
 class Shell:
     """Helper class for interacting with the shell."""
 
-    def run(self, command: list[str]) -> Proc:
+    def __init__(self):
+        self.fs: FileSystem = FileSystem()
+
+    def run(self, command: list[str]) -> CompletedProcess[bytes]:
         """
         Run cmd with current environment.
 
@@ -22,8 +23,8 @@ class Shell:
         log(f"Running command {' '.join(command)}")
         return subprocess.run(command, check=True, env=os.environ)
 
-    def patch(self, patch: str | Path) -> Proc:
-        log(f"Patching file: {patch}")
+    def patch(self, patch: Path) -> CompletedProcess[bytes]:
+        log(f"Patching file: {self.fs.relative_to(ROOT, patch)}")
         with open(patch, "rb") as f:
             return subprocess.run(
                 ["patch", "-p1", "--forward", "--fuzz=3"], input=f.read(), check=True

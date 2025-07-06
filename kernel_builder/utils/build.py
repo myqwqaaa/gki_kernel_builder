@@ -1,11 +1,12 @@
 import re
-
 from os import cpu_count
 from subprocess import CompletedProcess
 from pathlib import Path
 from dataclasses import dataclass, field
+from kernel_builder.pre_build.configurator import configurator
 from kernel_builder.config.config import WORKSPACE, DEFCONFIG
 from kernel_builder.utils import env
+from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.shell import Shell
 from kernel_builder.utils.log import log
 from typing import ClassVar, TypeAlias
@@ -16,10 +17,11 @@ Proc: TypeAlias = CompletedProcess[bytes]
 @dataclass(slots=True)
 class Builder:
     shell: Shell = field(default_factory=Shell)
+    fs: FileSystem = field(default_factory=FileSystem)
 
     workspace: ClassVar[Path] = WORKSPACE
-    jobs: int = field(default_factory=lambda: cpu_count() or 1)
     defconfig: ClassVar[str] = DEFCONFIG
+    jobs: int = field(default_factory=lambda: cpu_count() or 1)
     ksu_variant: str = field(default_factory=env.ksu_variant)
     use_susfs: bool = field(default_factory=env.susfs_enabled)
 
@@ -37,37 +39,6 @@ class Builder:
             ]
         )
 
-    def config(self, conf: str, mode: bool, config_path: Path | None = None) -> Proc:
-        _config: Path = self.workspace / "scripts" / "config"
-        target: Path = config_path or (self.workspace / "out" / ".config")
-        cmd = [
-            str(_config),
-            "--file",
-            str(target),
-            "--enable" if mode else "--disable",
-            conf,
-        ]
-        log(f"{'Enabling' if mode else 'Disabling'} config: {conf} (file={target})")
-        return self.shell.run(cmd)
-
-    def _ksu_configurator(self) -> None:
-        self.config("CONFIG_KSU", mode=True)
-
-        # Enable Manual Hook
-        self.config("CONFIG_KSU_MANUAL_HOOK", True)
-        self.config("CONFIG_KSU_KPROBES_HOOK", False)
-
-        # Enable KPM support for SukiSU
-        if self.ksu_variant == "SUKI":
-            self.config("CONFIG_KPM", True)
-
-        # Config SUSFS
-        if self.use_susfs:
-            self.config("CONFIG_KSU_SUSFS", True)
-            self.config("CONFIG_KSU_SUSFS_SUS_SU", False)
-        else:
-            self.config("CONFIG_KSU_SUSFS", False)
-
     def build(
         self,
         jobs: int | None = None,
@@ -79,10 +50,10 @@ class Builder:
         )
         self._make([self.defconfig], jobs=(jobs or self.jobs), out=out)
 
-        if self.ksu_variant != "NONE":
-            self._ksu_configurator()
-            log("Making oldefconfig")
-            self.shell.run(["make", "olddefconfig", f"O={out}"])
+        configurator()
+
+        log("Making oldefconfig")
+        self.shell.run(["make", "olddefconfig", f"O={out}"])
 
         log("Defconfig completed. Starting full build.")
         self._make(jobs=(jobs or self.jobs), out=out)

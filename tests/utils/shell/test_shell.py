@@ -13,7 +13,7 @@ import sys
 import pytest
 from pytest_mock import MockerFixture
 from types import SimpleNamespace
-from kernel_builder.utils.shell import Proc, Shell
+from kernel_builder.utils.shell import Shell
 import subprocess
 import importlib
 

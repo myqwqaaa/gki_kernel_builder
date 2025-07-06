@@ -4,12 +4,16 @@ from pathlib import Path
 from kernel_builder.config.config import (
     BUILD_HOST,
     BUILD_USER,
+    LLVM,
+    LLVM_IAS,
+    LTO_CLANG_FULL,
+    LTO_CLANG_THIN,
     TOOLCHAIN,
     CLANG_TRIPLE,
     CROSS_COMPILE,
     OUTPUT,
 )
-from kernel_builder.utils.builder import Builder
+from kernel_builder.utils.build import Builder
 from kernel_builder.pre_build.variants import Variants
 
 
@@ -35,12 +39,12 @@ class SetupEnvironment:
 
     def config_llvm(self) -> None:
         # Force LLVM binutils and Clang IAS
-        os.environ["LLVM"] = "1"
-        os.environ["LLVM_IAS"] = "1"
+        os.environ["LLVM"] = LLVM
+        os.environ["LLVM_IAS"] = LLVM_IAS
 
-        # Force Thin LTO
-        os.environ["CONFIG_LTO_CLANG_THIN"] = "y"
-        os.environ["CONFIG_LTO_CLANG_FULL"] = "n"
+        # Clang LTO (Thin, Full)
+        os.environ["CONFIG_LTO_CLANG_THIN"] = LTO_CLANG_THIN
+        os.environ["CONFIG_LTO_CLANG_FULL"] = LTO_CLANG_FULL
 
         # Set ll.lld as the linker
         os.environ["LD"] = str(self.CLANG_BIN / "ld.lld")

@@ -2,7 +2,6 @@ import shutil
 import gzip
 import subprocess
 
-from typing import ClassVar
 from pathlib import Path
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
@@ -12,9 +11,7 @@ from kernel_builder.utils.shell import Shell
 
 
 class KPMPatcher:
-    image_path: ClassVar[Path] = (
-        WORKSPACE / "out" / "arch" / "arm64" / "boot" / "Image.gz"
-    )
+    image_path: Path = WORKSPACE / "out" / "arch" / "arm64" / "boot" / "Image.gz"
 
     def __init__(self) -> None:
         self.shell: Shell = Shell()

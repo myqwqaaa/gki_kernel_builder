@@ -22,8 +22,8 @@ class LXCPatcher:
         if self.lxc:
             log("Applying LXC Patches")
             if self.susfs:
-                return self.shell.patch(str(LXC_SUSFS))
-            return self.shell.patch(str(LXC))
+                return self.shell.patch(LXC_SUSFS)
+            return self.shell.patch(LXC)
         else:
             return
 

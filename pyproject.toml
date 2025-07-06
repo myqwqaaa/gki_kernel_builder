@@ -23,4 +23,6 @@ include = ["kernel_builder"]
 exclude = ["tests"]
 typeCheckingMode = "recommended"
 reportUnusedCallResult = "none"
+reportExplicitAny = "none"
+reportAny = "none"
 pythonPlatform = "Linux"
