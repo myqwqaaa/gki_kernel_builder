@@ -23,11 +23,16 @@ class Shell:
         log(f"Running command {' '.join(command)}")
         return subprocess.run(command, check=True, env=os.environ)
 
-    def patch(self, patch: Path) -> CompletedProcess[bytes]:
+    def patch(
+        self, patch: Path, *, check: bool = True, cwd: Path | None = None
+    ) -> CompletedProcess[bytes]:
         log(f"Patching file: {self.fs.relative_to(ROOT, patch)}")
         with open(patch, "rb") as f:
             return subprocess.run(
-                ["patch", "-p1", "--forward", "--fuzz=3"], input=f.read(), check=True
+                ["patch", "-p1", "--forward", "--fuzz=3"],
+                input=f.read(),
+                check=check,
+                cwd=cwd or Path.cwd(),
             )
 
 
