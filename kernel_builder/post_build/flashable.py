@@ -31,8 +31,6 @@ class FlashableBuilder:
             "Image" if self.image_comp == "raw" else f"Image.{self.image_comp}"
         )
         img: Path = boot_dir / filename
-        if not img.exists():
-            raise FileNotFoundError(f"No kernel image found at {img}")
         return img
 
     def _stage_image(self, target: Path) -> None:
