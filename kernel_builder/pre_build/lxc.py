@@ -18,11 +18,8 @@ class LXCPatcher:
 
     def apply(self) -> Proc | None:
         LXC: Path = PATCHES / "lxc.patch"
-        LXC_SUSFS: Path = PATCHES / "lxc_susfs.patch"
         if self.lxc:
             log("Applying LXC Patches")
-            if self.susfs:
-                return self.shell.patch(LXC_SUSFS)
             return self.shell.patch(LXC)
         else:
             return
