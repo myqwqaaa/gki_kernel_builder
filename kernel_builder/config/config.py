@@ -13,6 +13,7 @@ VARIANT_JSON: Final[Path] = ROOT / "kernel_builder" / "config" / "variants.json"
 DEFCONFIG: Final[str] = "gki_defconfig"
 BUILD_USER: Final[str] = "gki-builder"
 BUILD_HOST: Final[str] = "esk"
+IMAGE_COMP: Final[str] = "gz"  # <raw|lz4|gz>
 
 # ====== Artifacts ======
 # Build Output

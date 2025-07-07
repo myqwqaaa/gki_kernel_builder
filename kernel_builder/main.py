@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-import shutil
-import zipfile
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import ClassVar, TypeAlias
 
 from kernel_builder.config.config import (
-    BOOT_SIGNING_KEY,
-    GKI_URL,
     OUTPUT,
     TOOLCHAIN,
     WORKSPACE,
 )
+from kernel_builder.post_build.flashable import FlashableBuilder
 from kernel_builder.post_build.kpm import KPMPatcher
 from kernel_builder.pre_build.lxc import LXCPatcher
 from kernel_builder.pre_build.setup_env import SetupEnvironment
@@ -47,6 +44,7 @@ class KernelBuilder:
         self.lxc: LXCPatcher = LXCPatcher()
         self.kpm: KPMPatcher = KPMPatcher()
         self.susfs: SUSFSPatcher = SUSFSPatcher()
+        self.flashable: FlashableBuilder = FlashableBuilder()
         self.local_run: bool = env.local_run()
 
     def run_build(self) -> None:
@@ -83,8 +81,8 @@ class KernelBuilder:
         self.kpm.patch()
 
         # Build flashable
-        self.build_anykernel3()
-        self.build_boot_image()
+        self.flashable.build_anykernel3()
+        self.flashable.build_boot_image()
 
         # Rename artifacts
         log("Renaming build artifacts...")
@@ -98,98 +96,6 @@ class KernelBuilder:
 
         anykernel_src.rename(anykernel_dest)
         boot_src.rename(boot_dest)
-
-    def build_anykernel3(self) -> None:
-        """
-        Build a flashable AnyKernel3 ZIP package.
-        """
-        log("Preparing to build AnyKernel3 package...")
-
-        ak_dir = WORKSPACE / "AnyKernel3"
-        shutil.copyfile(self.image_path, ak_dir / "Image.gz")
-        shutil.make_archive(
-            base_name=str(OUTPUT / "AnyKernel3"),
-            format="zip",
-            root_dir=ak_dir,
-            base_dir=".",
-        )
-
-        log(f"Created AnyKernel3.zip at {OUTPUT}")
-
-    def build_boot_image(self) -> None:
-        """
-        Create and sign the boot image from the GKI release.
-        """
-        log("Starting boot image creation process...")
-
-        boot_tmp = WORKSPACE / "boot"
-        unpacker = TOOLCHAIN / "mkbootimg" / "unpack_bootimg.py"
-        maker = TOOLCHAIN / "mkbootimg" / "mkbootimg.py"
-        avbtool = TOOLCHAIN / "build-tools" / "linux-x86" / "bin" / "avbtool"
-
-        # Prepare temp directory
-        self.fs.reset_path(boot_tmp)
-        self.fs.cd(boot_tmp)
-
-        # Download and extract GKI
-        log(f"Downloading GKI image from {GKI_URL}...")
-        self.shell.run(["wget", "-qO", str(boot_tmp / "gki.zip"), GKI_URL])
-        with zipfile.ZipFile(boot_tmp / "gki.zip", "r") as z:
-            z.extractall(boot_tmp)
-
-        log("Unpacking boot image...")
-        self.shell.run(
-            [
-                "python3",
-                str(unpacker),
-                f"--boot_img={boot_tmp / 'boot-5.10.img'}",
-            ]
-        )
-
-        log("Copying kernel image to boot directory...")
-        shutil.copyfile(self.image_path, boot_tmp / "Image.gz")
-
-        log("Rebuilding boot.img with mkbootimg.py...")
-        self.shell.run(
-            [
-                "python3",
-                str(maker),
-                "--header_version",
-                "4",
-                "--kernel",
-                "Image.gz",
-                "--output",
-                "boot.img",
-                "--ramdisk",
-                "out/ramdisk",
-                "--os_version",
-                "12.0.0",
-                "--os_patch_level",
-                "2025-05",
-            ]
-        )
-
-        # Sign the image
-        log("Signing boot.img with avbtool...")
-        self.shell.run(
-            [
-                str(avbtool),
-                "add_hash_footer",
-                "--partition_name",
-                "boot",
-                "--partition_size",
-                str(64 * 1024 * 1024),
-                "--image",
-                "boot.img",
-                "--algorithm",
-                "SHA256_RSA2048",
-                "--key",
-                str(BOOT_SIGNING_KEY),
-            ]
-        )
-
-        shutil.move(boot_tmp / "boot.img", OUTPUT / "boot.img")
-        log(f"Boot image created at {OUTPUT}")
 
 
 if __name__ == "__main__":
