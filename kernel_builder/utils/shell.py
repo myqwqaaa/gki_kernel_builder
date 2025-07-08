@@ -22,7 +22,7 @@ class Shell:
         :return: CompletedProcess[bytes]
         """
         log(f"Running command {' '.join(command)}")
-        if verbose:  # pyright: ignore[reportUnnecessaryComparison]
+        if verbose():
             return subprocess.run(command, check=True, env=os.environ)
         else:
             return subprocess.run(
