@@ -2,6 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
+from kernel_builder.utils.env import verbose
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.config.config import ROOT
@@ -21,7 +22,16 @@ class Shell:
         :return: CompletedProcess[bytes]
         """
         log(f"Running command {' '.join(command)}")
-        return subprocess.run(command, check=True, env=os.environ)
+        if verbose:  # pyright: ignore[reportUnnecessaryComparison]
+            return subprocess.run(command, check=True, env=os.environ)
+        else:
+            return subprocess.run(
+                command,
+                check=True,
+                stderr=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                env=os.environ,
+            )
 
     def patch(
         self, patch: Path, *, check: bool = True, cwd: Path | None = None

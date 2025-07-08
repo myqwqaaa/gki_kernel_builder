@@ -74,6 +74,7 @@ jobs:
       KSU: ${{ matrix.variant.KSU }}
       SUSFS: ${{ matrix.variant.SUSFS }}
       LXC: ${{ matrix.variant.LXC }}
+      VERBOSE: "false"
 
   release:
     name: Create Release
@@ -89,7 +90,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: release_files
-
 
       - name: Setup env
         run: |

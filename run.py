@@ -17,6 +17,13 @@ def build_parser() -> ArgumentParser:
         usage="%(prog)s build [-k {NONE,NEXT,SUKI,RKSU}] [-s/--susfs] [-l/--lxc]",
     )
     build.add_argument(
+        "-v",
+        "--verbose",
+        help="Enable verbose output",
+        action=BooleanOptionalAction,
+        default=False,
+    )
+    build.add_argument(
         "-k",
         "--ksu",
         choices=["NONE", "NEXT", "SUKI", "RKSU"],
@@ -39,7 +46,7 @@ def build_parser() -> ArgumentParser:
     )
 
     # Clean
-    clean: ArgumentParser = sub.add_parser("clean", help="Remove build artefacts")
+    clean: ArgumentParser = sub.add_parser("clean", help="Remove build artifacts")
     clean.add_argument(
         "-a",
         "--all",
@@ -59,6 +66,7 @@ def cmd_build(args: Namespace) -> None:
     os.environ["SUSFS"] = str(args.susfs).lower()
     os.environ["LXC"] = str(args.lxc).lower()
     os.environ["LOCAL_RUN"] = "true"
+    os.environ["VERBOSE_OUTPUT"] = str(args.verbose).lower()
 
     from kernel_builder.main import KernelBuilder
 

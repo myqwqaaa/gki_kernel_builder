@@ -19,3 +19,7 @@ def lxc_enabled(default: str = "false") -> bool:
 
 def local_run(default: str = "false") -> bool:
     return _bool_env("LOCAL_RUN", default)
+
+
+def verbose(default: str = "false") -> bool:
+    return _bool_env("VERBOSE_OUTPUT", default)
