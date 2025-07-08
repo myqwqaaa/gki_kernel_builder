@@ -54,12 +54,12 @@ SOURCES: Final[list[Source]] = [
     WILD_PATCHES,
 ]
 
-AOSP_REPO: Final[str] = (
-    "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/mirror-goog-main-llvm-toolchain-source"
-)
-AOSP_ARCHIVE: Final[str] = (
-    "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/mirror-goog-main-llvm-toolchain-source"
-)
+# AOSP_REPO: Final[str] = (
+#     "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/mirror-goog-main-llvm-toolchain-source"
+# )
+# AOSP_ARCHIVE: Final[str] = (
+#     "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/mirror-goog-main-llvm-toolchain-source"
+# )
 
 if __name__ == "__main__":
     raise SystemExit("This file is meant to be imported, not executed.")

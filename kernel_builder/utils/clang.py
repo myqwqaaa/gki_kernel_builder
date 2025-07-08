@@ -1,37 +1,43 @@
 from pathlib import Path
-
-
 from requests.models import Response
 import requests
 import tarfile
-import re
 
 from kernel_builder.config.config import TOOLCHAIN
-from kernel_builder.config.manifest import AOSP_ARCHIVE, AOSP_REPO
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.shell import Shell
+from kernel_builder.utils.log import log
+from typing import Any
 
 
-def _get_latest_aosp_clang(aosp_repo: str = AOSP_REPO) -> str:
-    resp: Response = requests.get(aosp_repo)
+def fetch_latest_aosp_clang(
+    user: str = "bachnxuan",
+    repo: str = "aosp_clang_mirror",
+    dest: Path = TOOLCHAIN,
+) -> None:
+    api_url: str = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+    resp: Response = requests.get(api_url)
     resp.raise_for_status()
-    html: str = resp.text
 
-    versions: list[str] = re.findall(r"clang-r(\d+)", html)
-    if not versions:
-        raise RuntimeError("No AOSP clang version found on the page")
+    data: dict[str, Any] = resp.json()
+    release_url: str | None = next(
+        (
+            asset["browser_download_url"]
+            for asset in data.get("assets", [])
+            if asset.get("browser_download_url", "").endswith(".tar.gz")
+        ),
+        None,
+    )
 
-    latest_num: int = max(int(v) for v in versions)
+    if release_url is None:
+        log(f"No .tar.gz asset found for {user}/{repo}", "error")
+        return
 
-    return f"clang-r{latest_num}"
+    log(f"Clang release url: {release_url}")
 
+    filename: str = Path(release_url).name
+    download_path: Path = dest / filename
 
-def fetch_latest_aosp_clang(aosp_archive: str = AOSP_ARCHIVE):
-    latest_version: str = _get_latest_aosp_clang()
-    clang_file: str = f"{latest_version}.tar.gz"
-    clang_url: str = f"{aosp_archive}/{clang_file}"
-
-    clang_path: Path = TOOLCHAIN / clang_file
     shell: Shell = Shell()
     shell.run(
         [
@@ -43,13 +49,17 @@ def fetch_latest_aosp_clang(aosp_archive: str = AOSP_ARCHIVE):
             "--timeout=60",
             "--retry-wait=5",
             "-d",
-            str(clang_path.parent),
+            str(dest),
             "-o",
-            str(clang_path.name),
-            clang_url,
+            filename,
+            release_url,
         ]
     )
-    FileSystem.reset_path(TOOLCHAIN / "clang")
-    with tarfile.open(clang_path) as archive:
-        archive.extractall(TOOLCHAIN / "clang")
-    clang_path.unlink()
+
+    out_dir: Path = dest / "clang"
+    FileSystem.reset_path(out_dir)
+    with tarfile.open(download_path) as archive:
+        archive.extractall(out_dir)
+
+    download_path.unlink()
+    log(f"Installed clang to {out_dir}")
