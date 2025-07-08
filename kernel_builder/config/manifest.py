@@ -27,11 +27,11 @@ MKBOOTIMG: Source = {
     "to": str(TOOLCHAIN / "mkbootimg"),
 }
 
-CLANG: Source = {
-    "url": "gitlab.com:crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r547379.git",
-    "branch": "15.0",
-    "to": str(TOOLCHAIN / "clang"),
-}
+# CLANG: Source = {
+#     "url": "gitlab.com:crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r547379.git",
+#     "branch": "15.0",
+#     "to": str(TOOLCHAIN / "clang"),
+# }
 
 SUSFS: Source = {
     "url": "gitlab.com:simonpunk/susfs4ksu.git",
@@ -50,10 +50,16 @@ SOURCES: Final[list[Source]] = [
     ANYKERNEL,
     BUILD_TOOL,
     MKBOOTIMG,
-    CLANG,
     SUSFS,
     WILD_PATCHES,
 ]
+
+AOSP_REPO: Final[str] = (
+    "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/mirror-goog-main-llvm-toolchain-source"
+)
+AOSP_ARCHIVE: Final[str] = (
+    "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/mirror-goog-main-llvm-toolchain-source"
+)
 
 if __name__ == "__main__":
     raise SystemExit("This file is meant to be imported, not executed.")

@@ -19,6 +19,7 @@ from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.pre_build.variants import Variants
 from kernel_builder.utils import env
 from kernel_builder.utils.build import Builder
+from kernel_builder.utils.clang import fetch_latest_aosp_clang
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.utils.shell import Shell
@@ -63,6 +64,9 @@ class KernelBuilder:
         # Clone sources
         log("Cloning kernel and toolchain repositories...")
         self.source.clone_sources()
+
+        # Clone Clang
+        fetch_latest_aosp_clang()
 
         # Export GitHub Actions env if not local
         if not self.local_run:
