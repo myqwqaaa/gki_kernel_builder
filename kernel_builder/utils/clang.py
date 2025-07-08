@@ -9,7 +9,7 @@ import re
 from kernel_builder.config.config import TOOLCHAIN
 from kernel_builder.config.manifest import AOSP_ARCHIVE, AOSP_REPO
 from kernel_builder.utils.fs import FileSystem
-from kernel_builder.utils.net import Net
+from kernel_builder.utils.shell import Shell
 
 
 def _get_latest_aosp_clang(aosp_repo: str = AOSP_REPO) -> str:
@@ -32,7 +32,23 @@ def fetch_latest_aosp_clang(aosp_archive: str = AOSP_ARCHIVE):
     clang_url: str = f"{aosp_archive}/{clang_file}"
 
     clang_path: Path = TOOLCHAIN / clang_file
-    Net.stream_to_file(clang_url, clang_path)
+    shell: Shell = Shell()
+    shell.run(
+        [
+            "aria2c",
+            "-x16",
+            "-s32",
+            "-k8M",
+            "--file-allocation=falloc",
+            "--timeout=60",
+            "--retry-wait=5",
+            "-d",
+            str(clang_path.parent),
+            "-o",
+            str(clang_path.name),
+            clang_url,
+        ]
+    )
     FileSystem.reset_path(TOOLCHAIN / "clang")
     with tarfile.open(clang_path) as archive:
         archive.extractall(TOOLCHAIN / "clang")

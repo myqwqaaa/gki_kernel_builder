@@ -14,15 +14,9 @@ Install dependencies:
 
 ```bash
 sudo apt update
-sudo apt install bc bison ccache curl flex git git-lfs tar wget
+sudo apt install bc bison ccache curl flex git tar wget aria2
 
 python3 -m pip install uv
-```
-
-Initialize Git LFS:
-
-```bash
-git lfs install
 ```
 
 ---
