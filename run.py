@@ -14,7 +14,7 @@ def build_parser() -> ArgumentParser:
     build = sub.add_parser(
         "build",
         help="Compile a kernel image",
-        usage="%(prog)s build [-k {NONE,NEXT,SUKI,RKSU}] [-s/--susfs] [-l/--lxc]",
+        usage="%(prog)s build [-v/--verbose] [-k/--ksu {NONE,NEXT,SUKI,RKSU}] [-s/--susfs] [-l/--lxc]",
     )
     build.add_argument(
         "-v",

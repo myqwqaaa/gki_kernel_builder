@@ -18,7 +18,7 @@ from pytest_mock import MockerFixture
 def test_build_guard(mocker: MockerFixture, ksu, susfs, expect_exit) -> None:
     fake: MockType = mocker.patch("kernel_builder.main.KernelBuilder", autospec=True)
     ns: SimpleNamespace = types.SimpleNamespace(
-        command="build", ksu=ksu, susfs=susfs, lxc=False
+        command="build", ksu=ksu, susfs=susfs, lxc=False, verbose=False
     )
 
     if expect_exit:
