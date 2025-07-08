@@ -4,7 +4,7 @@ from kernel_builder.utils.env import (
     susfs_enabled,
     lxc_enabled,
     local_run,
-    verbose,
+    verbose_enabled,
 )
 from pytest import MonkeyPatch
 
@@ -29,10 +29,10 @@ def test_env_flag_defaults() -> None:
     assert susfs_enabled() is False
     assert lxc_enabled() is False
     assert local_run() is False
-    assert verbose() is False
+    assert verbose_enabled() is False
 
     assert ksu_variant("NEXT") == "NEXT"
     assert susfs_enabled("TrUe") is True
     assert lxc_enabled("TrUe") is True
     assert local_run("FaLSe") is False
-    assert verbose("true") is True
+    assert verbose_enabled("true") is True

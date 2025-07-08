@@ -2,7 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
-from kernel_builder.utils.env import verbose
+from kernel_builder.utils.env import verbose_enabled
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.config.config import ROOT
@@ -14,15 +14,18 @@ class Shell:
     def __init__(self):
         self.fs: FileSystem = FileSystem()
 
-    def run(self, command: list[str]) -> CompletedProcess[bytes]:
+    def run(
+        self, command: list[str], verbose: bool | None = None
+    ) -> CompletedProcess[bytes]:
         """
         Run cmd with current environment.
 
         :param command: Command to run as a list of strings.
         :return: CompletedProcess[bytes]
         """
+        use_verbose: bool = verbose if verbose is not None else verbose_enabled()
         log(f"Running command {' '.join(command)}")
-        if verbose():
+        if use_verbose:
             return subprocess.run(command, check=True, env=os.environ)
         else:
             return subprocess.run(

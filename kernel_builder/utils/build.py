@@ -36,7 +36,8 @@ class Builder:
                 "CXX=ccache clang++",
                 *(args or []),
                 f"O={out}",
-            ]
+            ],
+            verbose=True,
         )
 
     def build(

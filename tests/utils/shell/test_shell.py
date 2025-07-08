@@ -31,9 +31,15 @@ def test_shell_run_success(mocker: MockerFixture):
     )
 
     cmd: list[str] = [sys.executable, "-c", "print('hi')"]
-    result: Proc = Shell().run(cmd)
+    result: subprocess.CompletedProcess[bytes] = Shell().run(cmd)
 
-    spy_sub.assert_called_once_with(cmd, check=True, env=os.environ)
+    spy_sub.assert_called_once_with(
+        cmd,
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        env=os.environ,
+    )
 
     logged = spy_log.call_args[0][0]
     assert logged.startswith("Running command ")
