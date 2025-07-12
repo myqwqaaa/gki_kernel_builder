@@ -1,13 +1,36 @@
+from re import Match, Pattern
 import logging
-
+import re
+from logging import FileHandler, Filter, Handler, LogRecord
 from pathlib import Path
 from logging import Logger
+from typing import override
 from rich.logging import RichHandler
 from rich.console import Console
 from kernel_builder.config.config import LOGFILE
 
 logger: Logger = logging.getLogger(__name__)
-console: Console = Console(force_terminal=True, color_system="truecolor")
+console: Console = Console(force_terminal=True, color_system="auto")
+
+
+class ShFilter(Filter):
+    _COMMAND: Pattern[str] = re.compile(r"<Command '(.*?)'(?:, pid (\d+))?>")
+
+    @override
+    def filter(self, record: LogRecord):
+        if record.name.startswith("sh"):
+            msg = record.getMessage()
+            if msg.endswith(": process started"):
+                msg = msg[: -len(": process started")]
+
+            m: Match[str] | None = self._COMMAND.search(msg)
+            if m:
+                cmd, _ = m.group(1), m.group(2)
+                pretty = f"Running: {cmd}"
+                msg = msg.replace(m.group(0), pretty)
+            record.msg = msg
+            record.args = ()
+        return True
 
 
 def _configure_log(
@@ -23,19 +46,24 @@ def _configure_log(
     if logger.handlers:
         return
 
-    handlers: list[logging.Handler] = [
-        RichHandler(
-            console=console,
-            omit_repeated_times=False,
-            show_time=True,
-            show_level=True,
-            show_path=False,
-            rich_tracebacks=True,
-        )
-    ]
+    filter: ShFilter = ShFilter()
+
+    rich_handlers: RichHandler = RichHandler(
+        console=console,
+        omit_repeated_times=False,
+        show_time=True,
+        show_level=True,
+        show_path=False,
+        rich_tracebacks=True,
+    )
+    rich_handlers.addFilter(filter)
+
+    handlers: list[Handler] = [rich_handlers]
 
     if logfile:
-        handlers.append(logging.FileHandler(logfile))
+        file_handler: FileHandler = logging.FileHandler(logfile)
+        file_handler.addFilter(filter)
+        handlers.append(file_handler)
 
     logging.basicConfig(
         level=level,

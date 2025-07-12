@@ -1,22 +1,19 @@
+import os
 import re
+from sh import make
 from os import cpu_count
-from subprocess import CompletedProcess
 from pathlib import Path
 from dataclasses import dataclass, field
 from kernel_builder.pre_build.configurator import configurator
 from kernel_builder.config.config import WORKSPACE, DEFCONFIG
 from kernel_builder.utils import env
 from kernel_builder.utils.fs import FileSystem
-from kernel_builder.utils.shell import Shell
 from kernel_builder.utils.log import log
-from typing import ClassVar, TypeAlias
-
-Proc: TypeAlias = CompletedProcess[bytes]
+from typing import ClassVar
 
 
 @dataclass(slots=True)
 class Builder:
-    shell: Shell = field(default_factory=Shell)
     fs: FileSystem = field(default_factory=FileSystem)
 
     workspace: ClassVar[Path] = WORKSPACE
@@ -27,17 +24,13 @@ class Builder:
 
     def _make(
         self, args: list[str] | None = None, *, jobs: int, out: str | Path
-    ) -> Proc:
-        return self.shell.run(
-            [
-                "make",
-                f"-j{jobs}",
-                "CC=ccache clang",
-                "CXX=ccache clang++",
-                *(args or []),
-                f"O={out}",
-            ],
-            verbose=True,
+    ) -> None:
+        make(
+            f"-j{jobs}",
+            *(args or []),
+            f"O={out}",
+            _cwd=Path.cwd(),
+            _env={**os.environ, "CC": "ccache clang", "CXX": "ccache clang++"},
         )
 
     def build(
@@ -53,20 +46,21 @@ class Builder:
 
         configurator()
 
-        log("Making oldefconfig")
-        self.shell.run(["make", "olddefconfig", f"O={out}"])
+        log("Making olddefconfig")
+        self._make(["olddefconfig"], jobs=(jobs or self.jobs), out=out)
 
         log("Defconfig completed. Starting full build.")
         self._make(jobs=(jobs or self.jobs), out=out)
         log("Build completed successfully.")
 
-    def get_kernel_version(self) -> str | None:
+    def get_kernel_version(self) -> str:
         log("Fetching kernel version...")
         makefile: str = (self.workspace / "Makefile").read_text()
         version = re.findall(
             r"^(?:VERSION|PATCHLEVEL|SUBLEVEL)\s*=\s*(\d+)$", makefile, re.MULTILINE
         )
-        return ".".join(version[:3]) if version else None
+        assert version, "Unable to determine kernel version"
+        return ".".join(version[:3])
 
 
 if __name__ == "__main__":

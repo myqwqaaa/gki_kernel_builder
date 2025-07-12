@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+import platform
 from pathlib import Path
-from subprocess import CompletedProcess
-from typing import ClassVar, TypeAlias
-
+from typing import ClassVar
+import sh
 from kernel_builder.config.config import (
     OUTPUT,
     TOOLCHAIN,
     WORKSPACE,
 )
 from kernel_builder.post_build.flashable import FlashableBuilder
-from kernel_builder.post_build.kpm import KPMPatcher
-from kernel_builder.pre_build.lxc import LXCPatcher
 from kernel_builder.pre_build.setup_env import SetupEnvironment
-from kernel_builder.pre_build.ksu import KSUInstaller
 from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.pre_build.variants import Variants
 from kernel_builder.utils import env
@@ -22,11 +19,14 @@ from kernel_builder.utils.build import Builder
 from kernel_builder.utils.clang import fetch_latest_aosp_clang
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from kernel_builder.utils.shell import Shell
 from kernel_builder.utils.source import SourceManager
 
-# ====== Typing Aliases ======
-Proc: TypeAlias = CompletedProcess[bytes]
+assert platform.system() == "Linux", "Only Linux machines supported"
+
+VERBOSE: bool = env.verbose_enabled()
+if VERBOSE:
+    # run every command in "foreground" mode (prints as it goes)
+    sh.Command._call_args["fg"] = True
 
 
 class KernelBuilder:
@@ -38,12 +38,8 @@ class KernelBuilder:
         self.builder: Builder = Builder()
         self.variants: Variants = Variants()
         self.environment: SetupEnvironment = SetupEnvironment()
-        self.shell: Shell = Shell()
-        self.ksu: KSUInstaller = KSUInstaller()
         self.fs: FileSystem = FileSystem()
         self.source: SourceManager = SourceManager()
-        self.lxc: LXCPatcher = LXCPatcher()
-        self.kpm: KPMPatcher = KPMPatcher()
         self.susfs: SUSFSPatcher = SUSFSPatcher()
         self.flashable: FlashableBuilder = FlashableBuilder()
         self.local_run: bool = env.local_run()
@@ -107,3 +103,4 @@ if __name__ == "__main__":
         KernelBuilder().run_build()
     except Exception as err:
         log(str(err), "error")
+        raise SystemExit(1)

@@ -1,11 +1,11 @@
-import subprocess
+from sh import RunningCommand
+import sh
 from pathlib import Path
+import subprocess
 from types import SimpleNamespace
-
 import pytest
 from pytest_mock import MockerFixture
-
-from kernel_builder.utils.shell import Shell
+from kernel_builder.utils.tool import patch
 
 
 @pytest.fixture
@@ -16,33 +16,31 @@ def dummy_patch(tmp_path: Path) -> Path:
 
 
 def test_patch_success(mocker: MockerFixture, dummy_patch: Path):
-    fake_proc = SimpleNamespace(returncode=0, stdout=b"", stderr=b"")
+    fake_proc: SimpleNamespace = SimpleNamespace(returncode=0, stdout=b"", stderr=b"")
     spy_run = mocker.patch(
-        "kernel_builder.utils.shell.subprocess.run",
-        autospec=True,
+        "sh.patch",
         return_value=fake_proc,
     )
-
-    result = Shell().patch(dummy_patch)
-
-    spy_run.assert_called_once()
-    cmd, kwargs = spy_run.call_args
-
-    assert cmd[0] == ["patch", "-p1", "--forward", "--fuzz=3"]
-    assert kwargs["check"] is True
-    assert kwargs["input"] == dummy_patch.read_bytes()
+    result: RunningCommand = patch(dummy_patch)
+    spy_run.assert_called_once_with(
+        "-p1",
+        "--forward",
+        "--fuzz=3",
+        _in=dummy_patch.read_bytes(),
+        _cwd=str(Path.cwd()),
+        _ok=False,
+    )
     assert result is fake_proc
 
 
 def test_patch_failure(mocker: MockerFixture, dummy_patch: Path):
     err = subprocess.CalledProcessError(1, ["patch"])
     mocker.patch(
-        "kernel_builder.utils.shell.subprocess.run",
-        autospec=True,
+        "sh.patch",
         side_effect=err,
     )
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
-        Shell().patch(dummy_patch)
+        patch(dummy_patch)
 
     assert exc.value is err
