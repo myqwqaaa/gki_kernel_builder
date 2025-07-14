@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from typing import Final
+from typing import Final, Literal
 
 # ====== Paths ======
 ROOT: Final[Path] = Path(__file__).resolve().parent.parent.parent
@@ -13,7 +13,7 @@ VARIANT_JSON: Final[Path] = ROOT / "kernel_builder" / "config" / "variants.json"
 DEFCONFIG: Final[str] = "gki_defconfig"
 BUILD_USER: Final[str] = "gki-builder"
 BUILD_HOST: Final[str] = "esk"
-IMAGE_COMP: Final[str] = "gz"  # <raw|lz4|gz>
+IMAGE_COMP: Final[Literal["raw", "lz4", "gz"]] = "gz"  # <raw|lz4|gz>
 
 # ====== Artifacts ======
 # Build Output
