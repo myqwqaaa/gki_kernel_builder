@@ -1,50 +1,79 @@
+from gzip import GzipFile
+
+
+from _io import _WrappedBuffer, TextIOWrapper
+
+
+from typing import IO, Any
+
+
 import shutil
 import gzip
+import lz4.frame
 
 from pathlib import Path
 
 from sh import Command
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from kernel_builder.config.config import WORKSPACE
+from kernel_builder.config.config import IMAGE_COMP, WORKSPACE
 from kernel_builder.utils.net import Net
 
 
 class KPMPatcher:
-    image_path: Path = WORKSPACE / "out" / "arch" / "arm64" / "boot" / "Image.gz"
-
     def __init__(self) -> None:
         self.fs: FileSystem = FileSystem()
         self.net: Net = Net()
+        self.image_comp: str = IMAGE_COMP
+
+    def _open(
+        self, path: Path, mode: str
+    ) -> GzipFile | TextIOWrapper[_WrappedBuffer] | Any | IO[Any]:
+        if self.image_comp == "gz":
+            return gzip.open(path, mode)
+        if self.image_comp == "lz4":
+            return lz4.frame.open(path, mode)
+        return path.open(mode)
 
     def patch(self) -> None:
+        log("Patching KPM")
         cwd: Path = Path.cwd()
         temp: Path = cwd / "temp"
         self.fs.reset_path(temp)
-        log("Patching KPM")
+        assets: dict[str, str] = {
+            "kpimg": (
+                "https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/raw/refs/heads/main/patch/res/kpimg"
+            ),
+            "kptools": (
+                "https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/raw/refs/heads/main/patch/res/kptools-linux"
+            ),
+        }
+        image: str = "Image" if self.image_comp == "raw" else f"Image.{self.image_comp}"
+        image_path: Path = WORKSPACE / "out" / "arch" / "arm64" / "boot" / image
+        decompressed: Path = temp / "Image"
+        temp_img: Path = temp / image
+
         try:
             self.fs.cd(temp)
-
-            assets: dict[str, str] = {
-                "kpimg": "https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/raw/refs/heads/main/patch/res/kpimg",
-                "kptools": "https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/raw/refs/heads/main/patch/res/kptools-linux",
-            }
 
             for name, url in assets.items():
                 dest: Path = temp / name
                 self.net.stream_to_file(url, dest)
                 dest.chmod(0o755)
 
-            gz_in: Path = temp / "Image.gz"
-            img: Path = temp / "Image"
-            shutil.move(self.image_path, gz_in)
-            with gzip.open(gz_in, "rb") as fsrc, img.open("wb") as fdst:
-                shutil.copyfileobj(fsrc, fdst)
+            shutil.move(image_path, temp_img)
+            if self.image_comp == "raw":
+                shutil.copy(temp_img, decompressed)
+            else:
+                with (
+                    self._open(temp_img, "rb") as fsrc,
+                    decompressed.open("wb") as fdst,
+                ):
+                    shutil.copyfileobj(fsrc, fdst)
 
             kptools: Command = Command(str(temp / "kptools"))
 
             kptools(
-                str(temp / "kptools"),
                 "-p",
                 "-s",
                 "123",
@@ -61,14 +90,16 @@ class KPMPatcher:
                 log(f"Patched image not found at {patched}", "error")
                 return
 
-            gz_in.unlink(missing_ok=True)
-            img.unlink(missing_ok=True)
+            temp_img.unlink(missing_ok=True)
+            image_path.unlink(missing_ok=True)
 
-            shutil.move(patched, img)
-            with img.open("rb") as src, gzip.open(gz_in, "wb") as dst:
-                shutil.copyfileobj(src, dst)
+            if self.image_comp == "raw":
+                shutil.copy(patched, temp_img)
+            else:
+                with patched.open("rb") as fsrc, self._open(temp_img, "wb") as fdst:
+                    shutil.copyfileobj(fsrc, fdst)
+            shutil.move(temp_img, image_path)
 
-            shutil.move(gz_in, self.image_path)
             log("KPM patch applied successfully")
 
         except Exception as e:
