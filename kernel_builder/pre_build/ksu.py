@@ -1,4 +1,4 @@
-from sh import Command, curl
+import subprocess
 from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.log import log
 from kernel_builder.utils.net import Net
@@ -30,8 +30,21 @@ class KSUInstaller:
 
         log(f"Installing KernelSU from {url} | {ref}")
 
-        _bash: Command = Command("bash")
-        _bash("-s", ref, _in=curl("-LSs", setup_url), _cwd=str(WORKSPACE))
+        # Temporary fix
+        script: str = subprocess.run(
+            ["curl", "-LSs", setup_url],
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout
+
+        subprocess.run(
+            ["bash", "-s", ref],
+            input=script,
+            cwd=str(WORKSPACE),
+            check=True,
+            text=True,
+        )
 
     def install(self) -> None:
         variant: str = self.variant.upper()
