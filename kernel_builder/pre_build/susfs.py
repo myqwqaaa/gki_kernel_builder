@@ -5,7 +5,7 @@ import re
 from subprocess import CompletedProcess
 from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.env import ksu_variant, susfs_enabled
-from kernel_builder.utils.shell import Shell
+from kernel_builder.utils.tool import patch
 from kernel_builder.utils.log import log
 from typing import TypeAlias
 from pathlib import Path
@@ -16,7 +16,6 @@ Proc: TypeAlias = CompletedProcess[bytes]
 
 class SUSFSPatcher:
     def __init__(self) -> None:
-        self.shell: Shell = Shell()
         self.ksu_variant: str = ksu_variant()
         self.susfs: bool = susfs_enabled()
 
@@ -34,7 +33,7 @@ class SUSFSPatcher:
         for patch_file in path.iterdir():
             if patch_file.suffix != ".patch":
                 continue
-            self.shell.patch(patch_file, check=False, cwd=target)
+            patch(patch_file, check=False, cwd=target)
 
     def apply(self) -> Proc | None:
         if self.ksu_variant == "NONE" or not self.susfs:
@@ -55,11 +54,11 @@ class SUSFSPatcher:
         self.copy(SUSFS / "fs", WORKSPACE / "fs")
         self.copy(SUSFS / "include" / "linux", WORKSPACE / "include" / "linux")
 
-        self.shell.patch(GKI_SUSFS)
+        patch(GKI_SUSFS)
 
         if self.ksu_variant == "NEXT":
             KSUN_PATH: Path = WORKSPACE / "KernelSU-Next"
-            self.shell.patch(KSU_SUSFS, check=False, cwd=KSUN_PATH)
+            patch(KSU_SUSFS, check=False, cwd=KSUN_PATH)
             self._apply_patch_folder(KSUN_SUSFS_FIX, KSUN_PATH)
 
 

@@ -1,6 +1,8 @@
 import shutil
 import zipfile
 from pathlib import Path
+
+from sh import Command
 from kernel_builder.config.config import (
     BOOT_SIGNING_KEY,
     GKI_URL,
@@ -12,13 +14,11 @@ from kernel_builder.config.config import (
 from kernel_builder.utils import env
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from kernel_builder.utils.shell import Shell
 from kernel_builder.utils.net import Net
 
 
 class FlashableBuilder:
     def __init__(self, image_comp: str | None = None) -> None:
-        self.shell: Shell = Shell()
         self.fs: FileSystem = FileSystem()
         self.net: Net = Net()
         self.local_run: bool = env.local_run()
@@ -63,9 +63,13 @@ class FlashableBuilder:
         log("Starting boot image creation process...")
 
         boot_tmp = WORKSPACE / "boot"
-        unpacker = TOOLCHAIN / "mkbootimg" / "unpack_bootimg.py"
-        maker = TOOLCHAIN / "mkbootimg" / "mkbootimg.py"
-        avbtool = TOOLCHAIN / "build-tools" / "linux-x86" / "bin" / "avbtool"
+        python: Command = Command("python3")
+
+        unpacker: Path = TOOLCHAIN / "mkbootimg" / "unpack_bootimg.py"
+        mkbootimg: Path = TOOLCHAIN / "mkbootimg" / "mkbootimg.py"
+        avbtool: Command = Command(
+            str(TOOLCHAIN / "build-tools" / "linux-x86" / "bin" / "avbtool")
+        )
 
         # Prepare temp directory
         self.fs.reset_path(boot_tmp)
@@ -78,54 +82,42 @@ class FlashableBuilder:
             z.extractall(boot_tmp)
 
         log("Unpacking boot image...")
-        self.shell.run(
-            [
-                "python3",
-                str(unpacker),
-                f"--boot_img={boot_tmp / 'boot-5.10.img'}",
-            ]
-        )
+        python(str(unpacker), f"--boot_img={boot_tmp / 'boot-5.10.img'}")
 
         log("Copying kernel image to boot directory...")
         self._stage_image(boot_tmp)
 
         log("Rebuilding boot.img with mkbootimg.py...")
-        self.shell.run(
-            [
-                "python3",
-                str(maker),
-                "--header_version",
-                "4",
-                "--kernel",
-                "Image.gz",
-                "--output",
-                "boot.img",
-                "--ramdisk",
-                "out/ramdisk",
-                "--os_version",
-                "12.0.0",
-                "--os_patch_level",
-                "2025-05",
-            ]
+        python(
+            str(mkbootimg),
+            "--header_version",
+            "4",
+            "--kernel",
+            "Image.gz",
+            "--output",
+            "boot.img",
+            "--ramdisk",
+            "out/ramdisk",
+            "--os_version",
+            "12.0.0",
+            "--os_patch_level",
+            "2025-05",
         )
 
         # Sign the image
         log("Signing boot.img with avbtool...")
-        self.shell.run(
-            [
-                str(avbtool),
-                "add_hash_footer",
-                "--partition_name",
-                "boot",
-                "--partition_size",
-                str(64 * 1024 * 1024),
-                "--image",
-                "boot.img",
-                "--algorithm",
-                "SHA256_RSA2048",
-                "--key",
-                str(BOOT_SIGNING_KEY),
-            ]
+        avbtool(
+            "add_hash_footer",
+            "--partition_name",
+            "boot",
+            "--partition_size",
+            str(64 * 1024 * 1024),
+            "--image",
+            "boot.img",
+            "--algorithm",
+            "SHA256_RSA2048",
+            "--key",
+            str(BOOT_SIGNING_KEY),
         )
 
         shutil.move(boot_tmp / "boot.img", OUTPUT / "boot.img")

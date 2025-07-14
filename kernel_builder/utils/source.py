@@ -1,21 +1,15 @@
 import re
 import requests
-
+from sh import git
 from dataclasses import dataclass, field
-from subprocess import CompletedProcess
 from kernel_builder.config.manifest import SOURCES
-from kernel_builder.utils.shell import Shell
 from urllib.parse import ParseResult, urlparse, urlunparse
 from kernel_builder.utils.log import log
-from typing import TypeAlias
 from re import Pattern
-
-Proc: TypeAlias = CompletedProcess[bytes]
 
 
 @dataclass(slots=True)
 class SourceManager:
-    shell: Shell = field(default_factory=Shell)
     sources: list[dict[str, str]] = field(default_factory=lambda: SOURCES.copy())
 
     @staticmethod
@@ -50,7 +44,7 @@ class SourceManager:
 
     def clone_repo(
         self, repo: dict[str, str], *, depth: int = 1, args: list[str] | None = None
-    ) -> Proc:
+    ) -> None:
         """
         Clone a git repository.
 
@@ -59,18 +53,14 @@ class SourceManager:
         :param args: Additional arguments to pass to git clone.
         :return: Proc
         """
-        return self.shell.run(
-            [
-                "git",
-                "clone",
-                "--depth",
-                str(depth),
-                "-b",
-                repo["branch"],
-                *(args or []),
-                self.restore_simplified(repo["url"]),
-                repo["to"],
-            ]
+        return git.clone(
+            "--depth",
+            str(depth),
+            "-b",
+            repo["branch"],
+            *(args or []),
+            self.restore_simplified(repo["url"]),
+            repo["to"],
         )
 
     def clone_sources(self) -> None:

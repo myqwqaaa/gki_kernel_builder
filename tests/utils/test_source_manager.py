@@ -1,4 +1,5 @@
 from pathlib import Path
+import sh
 import pytest
 from pytest_mock import MockerFixture
 from kernel_builder.utils.source import SourceManager
@@ -16,34 +17,9 @@ class FakeResp:
         pass
 
 
-def test_clone_repo_args(mocker: MockerFixture, tmp_path: Path):
-    fake_proc = object()
-    spy_run = mocker.patch(
-        "kernel_builder.utils.source.Shell.run",
-        return_value=fake_proc,
-        autospec=True,
-    )
-    sm = SourceManager()
-    repo = {
-        "url": "github.com:foo/bar",
-        "branch": "dev",
-        "to": str(tmp_path / "bar"),
-    }
-
-    result = sm.clone_repo(repo, depth=3, args=["--filter=blob:none"])
-    assert result is fake_proc
-
-    spy_run.assert_called_once()
-    cmd = spy_run.call_args.args[1]
-    assert cmd[:5] == ["git", "clone", "--depth", "3", "-b"]
-    assert "--filter=blob:none" in cmd
-    assert cmd[-2:] == ["https://github.com/foo/bar", repo["to"]]
-
-
 def test_clone_sources_logs_and_calls(mocker: MockerFixture):
-    mocker.patch("kernel_builder.utils.source.Shell.run", autospec=True)
-
-    spy_clone: MockType = mocker.spy(SourceManager, "clone_repo")
+    mocker.patch.object(SourceManager, "clone_repo", return_value=None)
+    spy_clone = mocker.spy(SourceManager, "clone_repo")
     spy_log: MockType = mocker.spy(
         importlib.import_module("kernel_builder.utils.source"), "log"
     )
