@@ -5,7 +5,7 @@ from os import cpu_count
 from pathlib import Path
 from dataclasses import dataclass, field
 from kernel_builder.pre_build.configurator import configurator
-from kernel_builder.config.config import WORKSPACE, DEFCONFIG
+from kernel_builder.config.config import IMAGE_COMP, WORKSPACE, DEFCONFIG
 from kernel_builder.utils import env
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
@@ -18,6 +18,7 @@ class Builder:
 
     workspace: ClassVar[Path] = WORKSPACE
     defconfig: ClassVar[str] = DEFCONFIG
+    image_comp: ClassVar[str] = IMAGE_COMP
     jobs: int = field(default_factory=lambda: cpu_count() or 1)
     ksu_variant: str = field(default_factory=env.ksu_variant)
     use_susfs: bool = field(default_factory=env.susfs_enabled)
@@ -39,18 +40,22 @@ class Builder:
         *,
         out: str | Path = "out",
     ) -> None:
-        log(
-            f"Start build: defconfig={self.defconfig}, out={out}, jobs={jobs or self.jobs}"
+        target: str = (
+            "Image" if self.image_comp == "raw" else f"Image.{self.image_comp}"
         )
-        self._make([self.defconfig], jobs=(jobs or self.jobs), out=out)
+        jobs = jobs or self.jobs
+        log(
+            f"Start build: defconfig={self.defconfig}, out={out}, jobs={jobs or self.jobs}, image_comp={self.image_comp}"
+        )
+        self._make([self.defconfig], jobs=jobs, out=out)
 
         configurator()
 
         log("Making olddefconfig")
-        self._make(["olddefconfig"], jobs=(jobs or self.jobs), out=out)
+        self._make(["olddefconfig"], jobs=jobs, out=out)
 
         log("Defconfig completed. Starting full build.")
-        self._make(jobs=(jobs or self.jobs), out=out)
+        self._make([target], jobs=jobs, out=out)
         log("Build completed successfully.")
 
     def get_kernel_version(self) -> str:
