@@ -5,12 +5,14 @@ import platform
 from pathlib import Path
 from typing import ClassVar
 import sh
+import sys
 from kernel_builder.config.config import (
     OUTPUT,
     TOOLCHAIN,
     WORKSPACE,
 )
 from kernel_builder.post_build.flashable import FlashableBuilder
+from kernel_builder.post_build.kpm import KPMPatcher
 from kernel_builder.pre_build.setup_env import SetupEnvironment
 from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.pre_build.variants import Variants
@@ -25,8 +27,12 @@ assert platform.system() == "Linux", "Only Linux machines supported"
 
 VERBOSE: bool = env.verbose_enabled()
 if VERBOSE:
-    # run every command in "foreground" mode (prints as it goes)
-    sh.Command._call_args["fg"] = True
+    sh.Command._call_args.update(
+        {
+            "out": sys.stdout,
+            "err": sys.stderr,
+        }
+    )
 
 
 class KernelBuilder:
@@ -38,6 +44,7 @@ class KernelBuilder:
         self.builder: Builder = Builder()
         self.variants: Variants = Variants()
         self.environment: SetupEnvironment = SetupEnvironment()
+        self.kpm: KPMPatcher = KPMPatcher()
         self.fs: FileSystem = FileSystem()
         self.source: SourceManager = SourceManager()
         self.susfs: SUSFSPatcher = SUSFSPatcher()
