@@ -1,4 +1,5 @@
 from sh import curl, bash
+from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.log import log
 from kernel_builder.utils.net import Net
 from kernel_builder.utils.source import SourceManager
@@ -29,7 +30,7 @@ class KSUInstaller:
 
         log(f"Installing KernelSU from {url} | {ref}")
 
-        bash("-s", ref, _in=curl("-LSs", setup_url))
+        bash("-s", ref, _in=curl("-LSs", setup_url), _cwd=str(WORKSPACE))
 
     def install(self) -> None:
         variant: str = self.variant.upper()
