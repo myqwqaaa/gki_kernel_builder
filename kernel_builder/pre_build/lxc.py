@@ -8,7 +8,6 @@ from pathlib import Path
 class LXCPatcher:
     def __init__(self) -> None:
         self.lxc: bool = env.lxc_enabled()
-        self.susfs: bool = env.susfs_enabled()
 
     def apply(self) -> None:
         LXC: Path = PATCHES / "lxc.patch"

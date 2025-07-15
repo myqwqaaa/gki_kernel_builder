@@ -55,7 +55,12 @@ class KSUInstaller:
             case "NEXT":
                 self._install_ksu("github.com:kernelSU-Next/kernelSU-Next", "next")
             case "SUKI":
-                self._install_ksu("github.com:SukiSU-Ultra/SukiSU-Ultra", "susfs-main")
+                if self.use_susfs:
+                    self._install_ksu(
+                        "github.com:SukiSU-Ultra/SukiSU-Ultra", "susfs-main"
+                    )
+                else:
+                    self._install_ksu("github.com:SukiSU-Ultra/SukiSU-Ultra", "nongki")
             case _:
                 return
 
