@@ -56,11 +56,6 @@ class KSUInstaller:
                 self._install_ksu("github.com:kernelSU-Next/kernelSU-Next", "next")
             case "SUKI":
                 self._install_ksu("github.com:SukiSU-Ultra/SukiSU-Ultra", "susfs-main")
-            case "RKSU":
-                self._install_ksu(
-                    "github.com:rsuntk/KernelSU",
-                    ("staging/susfs-main" if self.use_susfs else "main"),
-                )
             case _:
                 return
 

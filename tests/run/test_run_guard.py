@@ -11,7 +11,6 @@ from pytest_mock import MockerFixture
     [
         ("NEXT", True, False),
         ("SUKI", True, False),
-        ("RKSU", True, False),
         ("NONE", True, True),
     ],
 )

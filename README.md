@@ -62,11 +62,11 @@ Builds are performed via the custom wrapper script `run.py`
 ### Build
 
    ```python
-   usage: run.py build build [-k {NONE,NEXT,SUKI,RKSU}] [-s/--susfs] [-l/--lxc]
+   usage: run.py build build [-k {NONE,NEXT,SUKI}] [-s/--susfs] [-l/--lxc]
 
    options:
    -h, --help            show this help message and exit
-   -k {NONE,NEXT,SUKI,RKSU}, --ksu {NONE,NEXT,SUKI,RKSU}
+   -k {NONE,NEXT,SUKI}, --ksu {NONE,NEXT,SUKI}
                            KernelSU variant (default: NONE)
    -s, --susfs, --no-susfs
                            Enable SUSFS support
