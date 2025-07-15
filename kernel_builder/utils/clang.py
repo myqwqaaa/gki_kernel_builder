@@ -6,6 +6,7 @@ from kernel_builder.config.config import TOOLCHAIN
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from typing import Any
+from kernel_builder.utils.env import github_token
 
 
 def fetch_latest_aosp_clang(
@@ -14,7 +15,22 @@ def fetch_latest_aosp_clang(
     dest: Path = TOOLCHAIN,
 ) -> None:
     api_url: str = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-    raw: str = str(curl("-fsSL", "--retry", "5", "--retry-all-errors", api_url))
+    token: str | None = github_token()
+    if token:
+        raw = str(
+            curl(
+                "-H",
+                f"Authorization: token {token}",
+                "-fsSL",
+                "--retry",
+                "5",
+                "--retry-all-errors",
+                api_url,
+            )
+        )
+    else:
+        raw = str(curl("-fsSL", "--retry", "5", "--retry-all-errors", api_url))
+
     data: dict[str, Any] = json.loads(raw)
 
     release_url: str | None = next(

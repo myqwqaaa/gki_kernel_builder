@@ -23,3 +23,7 @@ def local_run(default: str = "false") -> bool:
 
 def verbose_enabled(default: str = "false") -> bool:
     return _bool_env("VERBOSE_OUTPUT", default)
+
+
+def github_token(default: str | None = None):
+    return os.getenv("GH_TOKEN", None)
