@@ -1,9 +1,7 @@
 from pathlib import Path
-from requests.models import Response
-import requests
+import json
 import tarfile
-
-from sh import aria2c
+from sh import aria2c, curl
 from kernel_builder.config.config import TOOLCHAIN
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
@@ -16,10 +14,9 @@ def fetch_latest_aosp_clang(
     dest: Path = TOOLCHAIN,
 ) -> None:
     api_url: str = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-    resp: Response = requests.get(api_url)
-    resp.raise_for_status()
+    raw: str = str(curl("-fsSL", "--retry", "5", "--retry-connrefused", api_url))
+    data: dict[str, Any] = json.loads(raw)
 
-    data: dict[str, Any] = resp.json()
     release_url: str | None = next(
         (
             asset["browser_download_url"]
