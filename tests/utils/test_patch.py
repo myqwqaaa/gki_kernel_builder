@@ -28,7 +28,7 @@ def test_patch_success(mocker: MockerFixture, dummy_patch: Path):
         "--fuzz=3",
         _in=dummy_patch.read_bytes(),
         _cwd=str(Path.cwd()),
-        _ok=False,
+        _ok_code=[0],
     )
     assert result is fake_proc
 
