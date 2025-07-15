@@ -17,7 +17,7 @@ def fetch_latest_aosp_clang(
     api_url: str = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
     token: str | None = github_token()
     if token:
-        raw = str(
+        raw: str = str(
             curl(
                 "-H",
                 f"Authorization: token {token}",
@@ -26,10 +26,13 @@ def fetch_latest_aosp_clang(
                 "5",
                 "--retry-all-errors",
                 api_url,
+                _out=None,
             )
         )
     else:
-        raw = str(curl("-fsSL", "--retry", "5", "--retry-all-errors", api_url))
+        raw = str(
+            curl("-fsSL", "--retry", "5", "--retry-all-errors", api_url, _out=None)
+        )
 
     data: dict[str, Any] = json.loads(raw)
 

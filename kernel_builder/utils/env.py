@@ -25,5 +25,5 @@ def verbose_enabled(default: str = "false") -> bool:
     return _bool_env("VERBOSE_OUTPUT", default)
 
 
-def github_token(default: str | None = None):
+def github_token() -> str | None:
     return os.getenv("GH_TOKEN", None)
