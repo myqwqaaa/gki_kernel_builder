@@ -78,7 +78,7 @@ jobs:
       - name: Setup env
         run: |
           RELEASE_REPO="bachnxuan/android12-5.10-lts"
-          BRANCH_TAG="android12-5.10-lts"
+          BRANCH_TAG="esk/main"
 
           echo "RELEASE_REPO=${RELEASE_REPO}" >> $GITHUB_ENV
           echo "BRANCH_TAG=${BRANCH_TAG}" >> $GITHUB_ENV
