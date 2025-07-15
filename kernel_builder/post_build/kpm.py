@@ -1,18 +1,7 @@
-from gzip import GzipFile
-
-
-from _io import _WrappedBuffer, TextIOWrapper
-
-
-from typing import IO, Any
-
-
 import shutil
 import gzip
 import lz4.frame
-
 from pathlib import Path
-
 from sh import Command
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
@@ -26,9 +15,7 @@ class KPMPatcher:
         self.net: Net = Net()
         self.image_comp: str = IMAGE_COMP
 
-    def _open(
-        self, path: Path, mode: str
-    ) -> GzipFile | TextIOWrapper[_WrappedBuffer] | Any | IO[Any]:
+    def _open(self, path: Path, mode: str):
         if self.image_comp == "gz":
             return gzip.open(path, mode)
         if self.image_comp == "lz4":
