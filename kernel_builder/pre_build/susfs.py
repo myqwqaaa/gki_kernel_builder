@@ -2,16 +2,11 @@ import shutil
 import os
 import re
 
-from subprocess import CompletedProcess
 from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.env import ksu_variant, susfs_enabled
 from kernel_builder.utils.tool import patch
 from kernel_builder.utils.log import log
-from typing import TypeAlias
 from pathlib import Path
-
-
-Proc: TypeAlias = CompletedProcess[bytes]
 
 
 class SUSFSPatcher:
@@ -35,7 +30,7 @@ class SUSFSPatcher:
                 continue
             patch(patch_file, check=False, cwd=target)
 
-    def apply(self) -> Proc | None:
+    def apply(self) -> None:
         if self.ksu_variant == "NONE" or not self.susfs:
             return
 

@@ -12,7 +12,12 @@ def patch(
     cwd = cwd or Path.cwd()
     data: bytes = patch.read_bytes()
     return sh.patch(
-        "-p1", "--forward", "--fuzz=3", _in=data, _cwd=str(cwd), _ok=not check
+        "-p1",
+        "--forward",
+        "--fuzz=3",
+        _in=data,
+        _cwd=str(cwd),
+        _ok_code=[0, 1] if not check else [0],
     )
 
 
