@@ -14,7 +14,7 @@ def fetch_latest_aosp_clang(
     dest: Path = TOOLCHAIN,
 ) -> None:
     api_url: str = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-    raw: str = str(curl("-fsSL", "--retry", "5", "--retry-connrefused", api_url))
+    raw: str = str(curl("-fsSL", "--retry", "5", "--retry-all-errors", api_url))
     data: dict[str, Any] = json.loads(raw)
 
     release_url: str | None = next(
