@@ -1,34 +1,34 @@
 from pathlib import Path
+import json
 import tarfile
-from sh import aria2c, curl, awk, grep
+from sh import aria2c, curl
 from kernel_builder.config.config import TOOLCHAIN
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-
-_USER = "bachnxuan"
-_REPO = "aosp_clang_mirror"
+from typing import Any
 
 
 def fetch_latest_aosp_clang(
+    user: str = "bachnxuan",
+    repo: str = "aosp_clang_mirror",
     dest: Path = TOOLCHAIN,
 ) -> None:
-    api_url: str = f"https://github.com/{_USER}/{_REPO}/releases/latest"
-    latest_tag: str = str(
-        awk(
-            "-F/",
-            "{print $NF}",
-            _in=grep(
-                "-i",
-                "^Location:",
-                _in=curl("-fsSLI", "--retry", "5", "--retry-connrefused", api_url),
-            ),
-        )
-    ).strip()
-    latest_clang: str = (
-        f"{latest_tag.removesuffix(f'-{latest_tag.split("-")[-1]}')}.tar.gz"
+    api_url: str = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+    raw: str = str(curl("-fsSL", "--retry", "5", "--retry-all-errors", api_url))
+    data: dict[str, Any] = json.loads(raw)
+
+    release_url: str | None = next(
+        (
+            asset["browser_download_url"]
+            for asset in data.get("assets", [])
+            if asset.get("browser_download_url", "").endswith(".tar.gz")
+        ),
+        None,
     )
 
-    release_url: str = f"https://github.com/bachnxuan/aosp_clang_mirror/releases/download/{latest_tag}/{latest_clang}"
+    if release_url is None:
+        log(f"No .tar.gz asset found for {user}/{repo}", "error")
+        return
 
     log(f"Clang release url: {release_url}")
 
