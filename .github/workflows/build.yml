@@ -91,6 +91,7 @@ jobs:
           SUSFS: ${{ inputs.SUSFS }}
           LXC: ${{ inputs.LXC }}
           VERBOSE_OUTPUT: ${{ inputs.VERBOSE }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           export PYTHONPATH=$(pwd)
           uv run python kernel_builder/main.py
