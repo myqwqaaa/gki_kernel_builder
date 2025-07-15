@@ -4,7 +4,7 @@ import re
 
 from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.env import ksu_variant, susfs_enabled
-from kernel_builder.utils.tool import patch
+from kernel_builder.utils.command import apply_patch
 from kernel_builder.utils.log import log
 from pathlib import Path
 
@@ -28,7 +28,7 @@ class SUSFSPatcher:
         for patch_file in path.iterdir():
             if patch_file.suffix != ".patch":
                 continue
-            patch(patch_file, check=False, cwd=target)
+            apply_patch(patch_file, check=False, cwd=target)
 
     def apply(self) -> None:
         if self.ksu_variant == "NONE" or not self.susfs:
@@ -49,11 +49,11 @@ class SUSFSPatcher:
         self.copy(SUSFS / "fs", WORKSPACE / "fs")
         self.copy(SUSFS / "include" / "linux", WORKSPACE / "include" / "linux")
 
-        patch(GKI_SUSFS)
+        apply_patch(GKI_SUSFS)
 
         if self.ksu_variant == "NEXT":
             KSUN_PATH: Path = WORKSPACE / "KernelSU-Next"
-            patch(KSU_SUSFS, check=False, cwd=KSUN_PATH)
+            apply_patch(KSU_SUSFS, check=False, cwd=KSUN_PATH)
             self._apply_patch_folder(KSUN_SUSFS_FIX, KSUN_PATH)
 
 

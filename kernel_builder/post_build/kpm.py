@@ -1,18 +1,17 @@
 import shutil
 import gzip
 import lz4.frame
+from sh import curl
 from pathlib import Path
 from sh import Command
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.config.config import IMAGE_COMP, WORKSPACE
-from kernel_builder.utils.net import Net
 
 
 class KPMPatcher:
     def __init__(self) -> None:
         self.fs: FileSystem = FileSystem()
-        self.net: Net = Net()
         self.image_comp: str = IMAGE_COMP
 
     def _open(self, path: Path, mode: str):
@@ -45,7 +44,7 @@ class KPMPatcher:
 
             for name, url in assets.items():
                 dest: Path = temp / name
-                self.net.stream_to_file(url, dest)
+                curl("-fsSL", "-", url, dest)
                 dest.chmod(0o755)
 
             shutil.move(image_path, temp_img)

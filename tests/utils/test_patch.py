@@ -1,11 +1,10 @@
 from sh import RunningCommand
-import sh
 from pathlib import Path
 import subprocess
 from types import SimpleNamespace
 import pytest
 from pytest_mock import MockerFixture
-from kernel_builder.utils.tool import patch
+from kernel_builder.utils.command import apply_patch
 
 
 @pytest.fixture
@@ -21,7 +20,7 @@ def test_patch_success(mocker: MockerFixture, dummy_patch: Path):
         "sh.patch",
         return_value=fake_proc,
     )
-    result: RunningCommand = patch(dummy_patch)
+    result: RunningCommand = apply_patch(dummy_patch)
     spy_run.assert_called_once_with(
         "-p1",
         "--forward",
@@ -41,6 +40,6 @@ def test_patch_failure(mocker: MockerFixture, dummy_patch: Path):
     )
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
-        patch(dummy_patch)
+        apply_patch(dummy_patch)
 
     assert exc.value is err

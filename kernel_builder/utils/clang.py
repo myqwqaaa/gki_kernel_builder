@@ -1,12 +1,12 @@
 from pathlib import Path
 import json
 import tarfile
-from sh import aria2c, curl
 from kernel_builder.config.config import TOOLCHAIN
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from typing import Any
 from kernel_builder.utils.env import github_token
+from kernel_builder.utils.command import curl, aria2c
 
 
 def fetch_latest_aosp_clang(
@@ -54,19 +54,7 @@ def fetch_latest_aosp_clang(
     filename: str = Path(release_url).name
     download_path: Path = dest / filename
 
-    aria2c(
-        "-x16",
-        "-s32",
-        "-k8M",
-        "--file-allocation=falloc",
-        "--timeout=60",
-        "--retry-wait=5",
-        "-d",
-        str(dest),
-        "-o",
-        filename,
-        release_url,
-    )
+    aria2c("-d", str(dest), "-o", filename, release_url)
 
     out_dir: Path = dest / "clang"
     FileSystem.reset_path(out_dir)

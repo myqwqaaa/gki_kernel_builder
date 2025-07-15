@@ -1,6 +1,6 @@
 from kernel_builder.utils import env
 from kernel_builder.config.config import PATCHES
-from kernel_builder.utils.tool import patch
+from kernel_builder.utils.command import apply_patch
 from kernel_builder.utils.log import log
 from pathlib import Path
 
@@ -13,7 +13,7 @@ class LXCPatcher:
         LXC: Path = PATCHES / "lxc.patch"
         if self.lxc:
             log("Applying LXC Patches")
-            patch(LXC)
+            apply_patch(LXC)
         else:
             return
 
