@@ -139,12 +139,12 @@ jobs:
           RUN_LINK="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           MESSAGE=$(cat <<EOF
           *==== Kernel CI ====*
-          *Linux Version*: "$VERSION"
-          *Build Date*: "$BUILD_DATE"
-          *KernelSU*: "$KSU_VARIANT"
-          *SUSFS*: "$SUSFS_VERSION"
+          *Linux Version*: $VERSION
+          *Build Date*: $BUILD_DATE
+          *KernelSU*: $KSU_VARIANT
+          *SUSFS*: $SUSFS_VERSION
           *LXC*: $([ "$LXC" = "true" ] && echo "Included" || echo "Disabled")
-          *Toolchain*: "$TOOLCHAIN"
+          *Toolchain*: $TOOLCHAIN
           [Workflow Run]($RUN_LINK)
           EOF
           )
