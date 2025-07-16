@@ -113,7 +113,7 @@ jobs:
           # toolchain       Toolchain version
           # build_time      Build timestamp
 
-          uv run run.py
+          uv run run.py build
 
       - name: Upload final artifacts
         uses: actions/upload-artifact@v4
@@ -132,7 +132,11 @@ jobs:
           LXC: ${{ inputs.LXC }}
           SUSFS_VERSION: ${{ steps.build.outputs.susfs_version }}
           TOOLCHAIN: ${{ steps.build.outputs.toolchain }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
+          RUN_LINK="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           MESSAGE=$(cat <<EOF
           *==== Kernel CI ====*
           *Linux Version*: "$VERSION"
@@ -141,6 +145,7 @@ jobs:
           *SUSFS*: "$SUSFS_VERSION"
           *LXC*: $([ "$LXC" = "true" ] && echo "Included" || echo "Disabled")
           *Toolchain*: "$TOOLCHAIN"
+          [Workflow Run]($RUN_LINK)
           EOF
           )
 
