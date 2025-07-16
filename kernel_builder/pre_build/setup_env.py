@@ -11,7 +11,6 @@ from kernel_builder.config.config import (
     TOOLCHAIN,
     CLANG_TRIPLE,
     CROSS_COMPILE,
-    OUTPUT,
 )
 from kernel_builder.utils.build import Builder
 from kernel_builder.pre_build.variants import Variants
@@ -48,12 +47,6 @@ class SetupEnvironment:
 
         # Set ll.lld as the linker
         os.environ["LD"] = str(self.CLANG_BIN / "ld.lld")
-
-    def export_github_env(self) -> None:
-        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-            f.write(f"output={OUTPUT}\n")
-            f.write(f"version={self.builder.get_kernel_version()}\n")
-            f.write(f"variant={self.variants.suffix}\n")
 
     def setup_env(self) -> None:
         """Set up the environment for building the kernel."""

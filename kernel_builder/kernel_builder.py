@@ -19,6 +19,7 @@ from kernel_builder.utils.clang import fetch_latest_aosp_clang
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
+from kernel_builder.post_build.export_env import GithubExportEnv
 
 
 class KernelBuilder:
@@ -42,6 +43,7 @@ class KernelBuilder:
         self.source: SourceManager = SourceManager()
         self.susfs: SUSFSPatcher = SUSFSPatcher()
         self.flashable: FlashableBuilder = FlashableBuilder()
+        self.export_env: GithubExportEnv = GithubExportEnv()
         self.local_run: bool = env.local_run()
 
         boot_dir: Path = WORKSPACE / "out" / "arch" / "arm64" / "boot"
@@ -70,10 +72,6 @@ class KernelBuilder:
         # Clone Clang
         fetch_latest_aosp_clang()
 
-        # Export GitHub Actions env if not local
-        if not self.local_run:
-            self.environment.export_github_env()
-
         # Enter workspace
         self.fs.cd(WORKSPACE)
 
@@ -85,6 +83,9 @@ class KernelBuilder:
 
         # Post build
         self.kpm.patch()
+
+        if not self.local_run:
+            self.export_env.export_github_env()
 
         # Build flashable
         self.flashable.build_anykernel3()

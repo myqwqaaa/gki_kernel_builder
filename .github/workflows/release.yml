@@ -59,6 +59,7 @@ jobs:
       SUSFS: ${{ matrix.variant.SUSFS }}
       LXC: ${{ matrix.variant.LXC }}
       VERBOSE: "false"
+      NOTIFY: "false"
 
   release:
     name: Create Release
