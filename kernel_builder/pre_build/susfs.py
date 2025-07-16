@@ -1,7 +1,8 @@
 import shutil
 import os
 import re
-
+from typing import override
+from kernel_builder.interface.patcher import PatcherInterface
 from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.env import ksu_variant, susfs_enabled
 from kernel_builder.utils.command import apply_patch
@@ -9,7 +10,7 @@ from kernel_builder.utils.log import log
 from pathlib import Path
 
 
-class SUSFSPatcher:
+class SUSFSPatcher(PatcherInterface):
     def __init__(self) -> None:
         self.ksu_variant: str = ksu_variant()
         self.susfs: bool = susfs_enabled()
@@ -30,6 +31,7 @@ class SUSFSPatcher:
                 continue
             apply_patch(patch_file, check=False, cwd=target)
 
+    @override
     def apply(self) -> None:
         if self.ksu_variant == "NONE" or not self.susfs:
             return
