@@ -17,14 +17,7 @@ aria2c: Command = sh.Command("aria2c").bake(
 def make_authorized_curl() -> Command:
     token = github_token()
     print(f"::add-mask::{token}")
-    return curl.bake(
-        "-fsSL",
-        "--retry",
-        "3",
-        "-H",
-        "Authorization: token $GITHUB_TOKEN",
-        _env={"GITHUB_TOKEN": token},
-    )
+    return curl.bake("-H", f"Authorization: token {token}")
 
 
 def apply_patch(

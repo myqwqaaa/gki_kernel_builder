@@ -7,6 +7,7 @@ from kernel_builder.utils.env import susfs_enabled
 from kernel_builder.config.config import OUTPUT, TOOLCHAIN, WORKSPACE
 from kernel_builder.utils.build import Builder
 from kernel_builder.pre_build.variants import Variants
+from kernel_builder.utils.log import log
 
 
 class GithubExportEnv:
@@ -51,4 +52,5 @@ class GithubExportEnv:
             "toolchain": toolchain,
             "build_time": current_time,
         }
+        log(f"Environment map to export: {env_map}")
         self._write_env(env_map)
