@@ -1,12 +1,9 @@
-#!/usr/bin/env python3
-# encoding: utf-8
-
 import platform
 from pathlib import Path
-from typing import ClassVar
 import sh
 import sys
 from kernel_builder.config.config import (
+    IMAGE_COMP,
     OUTPUT,
     TOOLCHAIN,
     WORKSPACE,
@@ -23,24 +20,20 @@ from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
 
-assert platform.system() == "Linux", "Only Linux machines supported"
-
-VERBOSE: bool = env.verbose_enabled()
-if VERBOSE:
-    sh.Command._call_args.update(
-        {
-            "out": sys.stdout,
-            "err": sys.stderr,
-        }
-    )
-
 
 class KernelBuilder:
-    image_path: ClassVar[Path] = (
-        WORKSPACE / "out" / "arch" / "arm64" / "boot" / "Image.gz"
-    )
-
     def __init__(self) -> None:
+        if platform.system() != "Linux":
+            raise RuntimeError("Only Linux machines supported")
+
+        if env.verbose_enabled():
+            sh.Command._call_args.update(
+                {
+                    "out": sys.stdout,
+                    "err": sys.stderr,
+                }
+            )
+
         self.builder: Builder = Builder()
         self.variants: Variants = Variants()
         self.environment: SetupEnvironment = SetupEnvironment()
@@ -50,6 +43,12 @@ class KernelBuilder:
         self.susfs: SUSFSPatcher = SUSFSPatcher()
         self.flashable: FlashableBuilder = FlashableBuilder()
         self.local_run: bool = env.local_run()
+
+        boot_dir: Path = WORKSPACE / "out" / "arch" / "arm64" / "boot"
+        image: Path = boot_dir / "Image"
+        self.image_path: Path = (
+            image if IMAGE_COMP == "raw" else image.with_suffix(f".{IMAGE_COMP}")
+        )
 
     def run_build(self) -> None:
         """
@@ -103,11 +102,3 @@ class KernelBuilder:
 
         anykernel_src.rename(anykernel_dest)
         boot_src.rename(boot_dest)
-
-
-if __name__ == "__main__":
-    try:
-        KernelBuilder().run_build()
-    except Exception as err:
-        log(str(err), "error")
-        raise SystemExit(1)

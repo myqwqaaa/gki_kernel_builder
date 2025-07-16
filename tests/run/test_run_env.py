@@ -1,13 +1,14 @@
 from pytest_mock.plugin import MockType
 import os
 import types
-from pytest import MonkeyPatch
 from pytest_mock import MockerFixture
 import run
 
 
-def test_env_var(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> None:
-    fake: MockType = mocker.patch("kernel_builder.main.KernelBuilder", autospec=True)
+def test_env_var(mocker: MockerFixture) -> None:
+    fake: MockType = mocker.patch(
+        "kernel_builder.kernel_builder.KernelBuilder", autospec=True
+    )
 
     ns = types.SimpleNamespace(
         command="build", ksu="NEXT", susfs=False, lxc=True, verbose=False

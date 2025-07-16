@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# encoding: utf-8
+
 from argparse import ArgumentParser, Namespace, BooleanOptionalAction
 import argparse
 import os
@@ -27,22 +30,22 @@ def build_parser() -> ArgumentParser:
         "-k",
         "--ksu",
         choices=["NONE", "NEXT", "SUKI"],
-        default="NONE",
         help="KernelSU variant (default: %(default)s)",
+        default=os.getenv("KSU", "NONE").upper(),
     )
     build.add_argument(
         "-s",
         "--susfs",
         help="Enable SUSFS support",
         action=BooleanOptionalAction,
-        default=False,
+        default=os.getenv("SUSFS", "false").lower(),
     )
     build.add_argument(
         "-l",
         "--lxc",
         help="Enable LXC support",
         action=BooleanOptionalAction,
-        default=False,
+        default=os.getenv("SUSFS", "false").lower(),
     )
 
     # Clean
@@ -68,7 +71,7 @@ def cmd_build(args: Namespace) -> None:
     os.environ["LOCAL_RUN"] = "true"
     os.environ["VERBOSE_OUTPUT"] = str(args.verbose).lower()
 
-    from kernel_builder.main import KernelBuilder
+    from kernel_builder.kernel_builder import KernelBuilder
 
     KernelBuilder().run_build()
 
