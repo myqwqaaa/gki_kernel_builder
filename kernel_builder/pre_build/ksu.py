@@ -1,9 +1,10 @@
 import subprocess
+from sh import jq
 from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.log import log
-from kernel_builder.utils.net import Net
 from kernel_builder.utils.source import SourceManager
 from kernel_builder.utils import env
+from kernel_builder.utils.command import authorized_curl
 
 
 class KSUInstaller:
@@ -14,7 +15,6 @@ class KSUInstaller:
 
     def __init__(self) -> None:
         self.source: SourceManager = SourceManager()
-        self.net: Net = Net()
         self.variant: str = env.ksu_variant()
         self.use_susfs: bool = env.susfs_enabled()
 
@@ -24,7 +24,15 @@ class KSUInstaller:
 
         if not ref:
             user, repo = url.split(":", 1)
-            ref = self.net.fetch_latest_tag(user, repo)
+            ref = str(
+                jq(
+                    "-r",
+                    ".tag_name",
+                    _in=authorized_curl(
+                        f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+                    ),
+                )
+            ).strip()
 
         setup_url = f"https://raw.githubusercontent.com/{url.split(':', 1)[1]}/{ref}/kernel/setup.sh"
 

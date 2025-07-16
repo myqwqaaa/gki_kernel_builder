@@ -14,7 +14,7 @@ Install dependencies:
 
 ```bash
 sudo apt update
-sudo apt install bc bison ccache curl flex git tar wget aria2
+sudo apt install bc bison ccache curl flex git tar wget aria2 jq
 
 python3 -m pip install uv
 ```
