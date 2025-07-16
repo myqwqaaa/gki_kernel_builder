@@ -1,6 +1,3 @@
-from sh import Command
-
-
 from pathlib import Path
 import json
 import tarfile
@@ -8,7 +5,7 @@ from kernel_builder.config.config import TOOLCHAIN
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from typing import Any
-from kernel_builder.utils.command import make_authorized_curl, aria2c
+from kernel_builder.utils.command import authorized_curl, aria2c
 
 
 def fetch_latest_aosp_clang(
@@ -17,13 +14,7 @@ def fetch_latest_aosp_clang(
     dest: Path = TOOLCHAIN,
 ) -> None:
     api_url: str = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-    authorized_curl: Command = make_authorized_curl()
-    raw: str = str(
-        authorized_curl(
-            api_url,
-            _out=None,
-        )
-    )
+    raw: str = authorized_curl(api_url)
 
     data: dict[str, Any] = json.loads(raw)
 

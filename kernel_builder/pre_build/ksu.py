@@ -1,10 +1,10 @@
 import subprocess
-from sh import Command, jq
+from sh import jq
 from kernel_builder.config.config import WORKSPACE
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
 from kernel_builder.utils import env
-from kernel_builder.utils.command import make_authorized_curl
+from kernel_builder.utils.command import authorized_curl
 
 
 class KSUInstaller:
@@ -24,7 +24,7 @@ class KSUInstaller:
 
         if not ref:
             user, repo = url.split(":", 1)
-            authorized_curl: Command = make_authorized_curl()
+
             ref = str(
                 jq(
                     "-r",

@@ -1,6 +1,7 @@
 from sh import Command
 import sh
 from pathlib import Path
+import subprocess
 from kernel_builder.utils.env import github_token
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
@@ -14,10 +15,12 @@ aria2c: Command = sh.Command("aria2c").bake(
 )
 
 
-def make_authorized_curl() -> Command:
+def authorized_curl(url: str) -> str:
     token = github_token()
-    print(f"::add-mask::{token}")
-    return curl.bake("-H", f"Authorization: token {token}")
+    out: bytes = subprocess.check_output(
+        ["curl", "-fsSL", "--retry", "3", "-H", f"Authorization: token {token}", url]
+    )
+    return out.decode()
 
 
 def apply_patch(
