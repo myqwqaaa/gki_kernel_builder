@@ -8,15 +8,23 @@ from kernel_builder.config.config import ROOT
 
 # Baked Commands
 curl: Command = sh.Command("curl").bake("-fsSL", "--retry", "5", "--retry-all-errors")
-authorized_curl: Command = (
-    curl.bake("-H", f"Authorization: token {github_token()}")
-    if github_token()
-    else curl
-)
 patch: Command = sh.Command("patch").bake("-p1", "--forward", "--fuzz=3")
 aria2c: Command = sh.Command("aria2c").bake(
     "-x16", "-s32", "-k8M", "--file-allocation=falloc", "--timeout=60", "--retry-wait=5"
 )
+
+
+def make_authorized_curl() -> Command:
+    token = github_token()
+    print(f"::add-mask::{token}")
+    return curl.bake(
+        "-fsSL",
+        "--retry",
+        "3",
+        "-H",
+        "Authorization: token $GITHUB_TOKEN",
+        _env={"GITHUB_TOKEN": token},
+    )
 
 
 def apply_patch(
