@@ -17,14 +17,11 @@ def dummy_patch(tmp_path: Path) -> Path:
 def test_patch_success(mocker: MockerFixture, dummy_patch: Path):
     fake_proc: SimpleNamespace = SimpleNamespace(returncode=0, stdout=b"", stderr=b"")
     spy_run = mocker.patch(
-        "sh.patch",
+        "kernel_builder.utils.command.patch",
         return_value=fake_proc,
     )
     result: RunningCommand = apply_patch(dummy_patch)
     spy_run.assert_called_once_with(
-        "-p1",
-        "--forward",
-        "--fuzz=3",
         _in=dummy_patch.read_bytes(),
         _cwd=str(Path.cwd()),
         _ok_code=[0],
@@ -35,7 +32,7 @@ def test_patch_success(mocker: MockerFixture, dummy_patch: Path):
 def test_patch_failure(mocker: MockerFixture, dummy_patch: Path):
     err = subprocess.CalledProcessError(1, ["patch"])
     mocker.patch(
-        "sh.patch",
+        "kernel_builder.utils.command.patch",
         side_effect=err,
     )
 

@@ -12,15 +12,14 @@ from kernel_builder.config.config import (
     WORKSPACE,
 )
 from kernel_builder.utils import env
+from kernel_builder.utils.command import curl
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from kernel_builder.utils.net import Net
 
 
 class FlashableBuilder:
     def __init__(self, image_comp: str | None = None) -> None:
         self.fs: FileSystem = FileSystem()
-        self.net: Net = Net()
         self.local_run: bool = env.local_run()
         self.image_comp: str = image_comp or IMAGE_COMP
         self.image_path: Path = self._resolve_image_path()
@@ -77,7 +76,7 @@ class FlashableBuilder:
 
         # Download and extract GKI
         log(f"Downloading GKI image from {GKI_URL}...")
-        self.net.stream_to_file(GKI_URL, boot_tmp / "gki.zip")
+        curl("-o", str(boot_tmp / "gki.zip"), GKI_URL)
         with zipfile.ZipFile(boot_tmp / "gki.zip", "r") as z:
             z.extractall(boot_tmp)
 

@@ -1,9 +1,6 @@
 from pytest_mock.plugin import MockType
-
-
 import os
 import types
-
 from pytest import MonkeyPatch
 from pytest_mock import MockerFixture
 import run
