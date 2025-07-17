@@ -1,4 +1,5 @@
 # GKI Kernel Builder
+
 [![codecov](https://codecov.io/gh/bachnxuan/gki_kernel_builder/graph/badge.svg?token=EYKHK1OOC4)](https://codecov.io/gh/bachnxuan/gki_kernel_builder)
 
 Effortlessly building Android Generic Kernel Image (GKI).
@@ -62,23 +63,30 @@ Builds are performed via the custom wrapper script `run.py`
 ### Build
 
    ```python
-   usage: run.py build build [-k {NONE,NEXT,SUKI}] [-s/--susfs] [-l/--lxc]
+   usage: run.py build build [-v/--verbose] [-k/--ksu {NONE,NEXT,SUKI}] [-s/--susfs] [-l/--lxc]
 
    options:
    -h, --help            show this help message and exit
+   -v, --verbose, --no-verbose
+                           Enable verbose output
    -k {NONE,NEXT,SUKI}, --ksu {NONE,NEXT,SUKI}
                            KernelSU variant (default: NONE)
    -s, --susfs, --no-susfs
                            Enable SUSFS support
-   -l, --lxc, --no-lxc   Enable LXC support
    ```
 
 ### Build Example
 
-   `KernelSU Next` with `SUSFS` and `LXC` disabled:
+   `KernelSU Next` with `SUSFS` and no `LXC`:
 
    ```bash
-   uv run run.py build --ksu NEXT --susfs --no-lxc
+   uv run run.py build -k NEXT -s
+   ```
+
+   `SukiSU` with `SUSFS` and `LXC` disabled and verbose output:
+
+   ```bash
+   uv run run.py build --verbose --ksu SUKI --no-susfs --no-lxc
    ```
 
 ### Clean
@@ -95,10 +103,21 @@ Builds are performed via the custom wrapper script `run.py`
 
 ## GitHub Workflows
 
-1. **Fork the repository** to your GitHub account.
-2. **Configure secrets**:
+1. **Fork** this repo to your GitHub account.
 
-   * `GH_TOKEN`: A Personal Access Token (PAT) with repo and workflow read/write permissions for the kernel builder repo and the release repo.
+2. **Add secret** `GH_TOKEN`
+   * PAT scopes (read and write): `workflow`, `content`
+   * Add PAT access to your release and kernel builder repo
+   * Repo → Settings → Secrets → Actions → **New secret**.
+
+3. **Optional Telegram secrets**
+
+> [!NOTE]
+> Add the below Telegram secrets below when you want to notify completed build on Telegram.
+> The Telegram notify feature can be config via `NOTIFY` on workflows_dispatch and workflows_call input.
+
+   * `TG_BOT_TOKEN` – Telegram Bot Token
+   * `TG_CHAT_ID` – Telegram Chat ID
 
 ---
 
@@ -111,7 +130,7 @@ Customize your build by:
 
 * `config/config.py` – Contains kernel configuration settings.
 * `config/manifest.py` – Specifies repository sources and branches.
-* `main.py` – The main script responsible for orchestrating the build.
+* `kernel_builder.py` – The main script responsible for orchestrating the build.
 
 ---
 
