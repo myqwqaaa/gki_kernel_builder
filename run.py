@@ -102,9 +102,10 @@ def main():
 
 
 if __name__ == "__main__":
-    if platform.system() != "Linux":
-        raise RuntimeError("Only Linux machines supported")
     try:
+        if platform.system() != "Linux":
+            raise RuntimeError("Only Linux machines supported")
+
         main()
-    except Exception as err:
+    except (Exception, RuntimeError) as err:
         log(str(err), "error")
