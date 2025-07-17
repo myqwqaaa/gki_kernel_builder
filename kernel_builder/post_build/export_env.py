@@ -6,7 +6,8 @@ from dotenv import set_key
 from sh import Command, head, sed
 from datetime import datetime, timezone
 from kernel_builder.utils.env import susfs_enabled
-from kernel_builder.config.config import OUTPUT, ROOT, TOOLCHAIN, WORKSPACE
+from kernel_builder.config.config import OUTPUT
+from kernel_builder.constants import ROOT, TOOLCHAIN, WORKSPACE
 from kernel_builder.utils.build import Builder
 from kernel_builder.pre_build.variants import Variants
 from kernel_builder.utils.log import log

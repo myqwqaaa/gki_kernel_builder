@@ -1,5 +1,5 @@
 import shutil
-from kernel_builder.config.config import ROOT
+from kernel_builder.constants import ROOT
 from kernel_builder.utils.log import log
 from pathlib import Path
 from os import chdir

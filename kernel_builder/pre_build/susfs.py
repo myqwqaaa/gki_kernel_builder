@@ -3,7 +3,7 @@ import os
 import re
 from typing import override
 from kernel_builder.interface.patcher import PatcherInterface
-from kernel_builder.config.config import WORKSPACE
+from kernel_builder.constants import WORKSPACE
 from kernel_builder.utils.env import ksu_variant, susfs_enabled
 from kernel_builder.utils.command import apply_patch
 from kernel_builder.utils.log import log

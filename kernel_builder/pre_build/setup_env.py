@@ -1,9 +1,8 @@
 import os
 from typing import Final
 from pathlib import Path
-from kernel_builder.config.config import (
-    BUILD_HOST,
-    BUILD_USER,
+from kernel_builder.config.config import BUILD_HOST, BUILD_USER
+from kernel_builder.constants import (
     LLVM,
     LLVM_IAS,
     LTO_CLANG_FULL,

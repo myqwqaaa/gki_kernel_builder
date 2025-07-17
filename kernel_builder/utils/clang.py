@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 import tarfile
-from kernel_builder.config.config import TOOLCHAIN
+from kernel_builder.constants import TOOLCHAIN
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from typing import Any

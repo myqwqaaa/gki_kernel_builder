@@ -6,7 +6,8 @@ from pathlib import Path
 from sh import Command
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from kernel_builder.config.config import IMAGE_COMP, WORKSPACE
+from kernel_builder.config.config import IMAGE_COMP
+from kernel_builder.constants import WORKSPACE
 
 
 class KPMPatcher:

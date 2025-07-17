@@ -5,7 +5,7 @@ import subprocess
 from kernel_builder.utils.env import github_token
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from kernel_builder.config.config import ROOT
+from kernel_builder.constants import ROOT
 
 # Baked Commands
 curl: Command = sh.Command("curl").bake("-fsSL", "--retry", "5", "--retry-all-errors")

@@ -78,7 +78,8 @@ def cmd_build(args: Namespace) -> None:
 
 
 def cmd_clean(args: Namespace) -> None:
-    from kernel_builder.config.config import OUTPUT, WORKSPACE, TOOLCHAIN
+    from kernel_builder.config.config import OUTPUT
+    from kernel_builder.constants import WORKSPACE, TOOLCHAIN, ROOT
 
     build_folder: list[Path] = [WORKSPACE, TOOLCHAIN]
 
@@ -86,6 +87,9 @@ def cmd_clean(args: Namespace) -> None:
         build_folder.append(OUTPUT)
     for folder in build_folder:
         shutil.rmtree(folder, ignore_errors=True)
+
+    github_exported_env: Path = ROOT / "github.env"
+    github_exported_env.unlink(missing_ok=True)
 
 
 def main():

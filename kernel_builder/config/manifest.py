@@ -1,5 +1,16 @@
-from .config import WORKSPACE, TOOLCHAIN
+from kernel_builder.constants import WORKSPACE, TOOLCHAIN
+from .config import ANYKERNEL_REPO, ANYKERNEL_BRANCH
 from typing import Final, TypeAlias
+
+# Simplified Git link format
+#
+# 1. Format
+#    {host}:{user}/{repo}
+#    Example: github.com:bachnxuan/gki_kernel_builder
+#
+# 2. Rules
+#    - Do not include the ".git" suffix
+#    - Do not use git ssh links (only https/http)
 
 Source: TypeAlias = Final[dict[str, str]]
 
@@ -10,8 +21,8 @@ KERNEL: Source = {
 }
 
 ANYKERNEL: Source = {
-    "url": "github.com:bachnxuan/AnyKernel3",
-    "branch": "android12-5.10",
+    "url": ANYKERNEL_REPO,
+    "branch": ANYKERNEL_BRANCH,
     "to": str(WORKSPACE / "AnyKernel3"),
 }
 
@@ -27,14 +38,8 @@ MKBOOTIMG: Source = {
     "to": str(TOOLCHAIN / "mkbootimg"),
 }
 
-# CLANG: Source = {
-#     "url": "gitlab.com:crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r547379.git",
-#     "branch": "15.0",
-#     "to": str(TOOLCHAIN / "clang"),
-# }
-
 SUSFS: Source = {
-    "url": "gitlab.com:simonpunk/susfs4ksu.git",
+    "url": "gitlab.com:simonpunk/susfs4ksu",
     "branch": "gki-android12-5.10",
     "to": str(WORKSPACE / "susfs4ksu"),
 }
@@ -53,13 +58,6 @@ SOURCES: Final[list[Source]] = [
     SUSFS,
     WILD_PATCHES,
 ]
-
-# AOSP_REPO: Final[str] = (
-#     "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/mirror-goog-main-llvm-toolchain-source"
-# )
-# AOSP_ARCHIVE: Final[str] = (
-#     "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/mirror-goog-main-llvm-toolchain-source"
-# )
 
 if __name__ == "__main__":
     raise SystemExit("This file is meant to be imported, not executed.")

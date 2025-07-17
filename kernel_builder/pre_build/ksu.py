@@ -1,7 +1,7 @@
 import os
 import subprocess
 from sh import jq
-from kernel_builder.config.config import WORKSPACE
+from kernel_builder.constants import WORKSPACE
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
 from kernel_builder.utils import env
