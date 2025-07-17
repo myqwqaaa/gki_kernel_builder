@@ -46,7 +46,7 @@ def build_parser() -> ArgumentParser:
         "--lxc",
         help="Enable LXC support",
         action=BooleanOptionalAction,
-        default=os.getenv("SUSFS", "false").lower(),
+        default=os.getenv("LXC", "false").lower(),
     )
 
     # Clean
