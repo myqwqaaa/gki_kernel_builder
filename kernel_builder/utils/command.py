@@ -15,12 +15,21 @@ aria2c: Command = sh.Command("aria2c").bake(
 )
 
 
+class CurlFailure(RuntimeError):
+    """Curl failed without leaking secrets."""
+
+
 def authorized_curl(url: str) -> str:
+    _curl = ["curl", "-fsSL", "--retry", "5", "--retry-all-errors"]
     token = github_token()
-    out: bytes = subprocess.check_output(
-        ["curl", "-fsSL", "--retry", "3", "-H", f"Authorization: token {token}", url]
-    )
-    return out.decode()
+
+    cmd = _curl + ["-H", f"Authorization: token {token}", url]
+
+    try:
+        out = subprocess.check_output(cmd, text=True, stderr=subprocess.PIPE)
+        return out
+    except subprocess.CalledProcessError as exc:
+        raise CurlFailure(f"curl exited {exc.returncode} for {url}") from None
 
 
 def apply_patch(
