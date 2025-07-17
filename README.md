@@ -6,10 +6,25 @@ Effortlessly building Android Generic Kernel Image (GKI).
 
 ---
 
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Setup Kernel Builder](#setup-kernel-builder)
+- [Build the kernel](#build-the-kernel)
+  - [Usage](#usage)
+  - [Build](#build)
+  - [Build Example](#build-example)
+  - [Clean](#clean)
+- [GitHub Workflows](#github-workflows)
+- [Configuration](#configuration)
+- [License](#license)
+
+---
+
 ## Requirements
 
-* Ubuntu/Debian-based Linux
-* Python 3.12+
+- Ubuntu/Debian-based Linux
+- Python 3.12+
 
 Install dependencies:
 
