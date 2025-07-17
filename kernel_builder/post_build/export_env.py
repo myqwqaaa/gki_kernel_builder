@@ -1,3 +1,4 @@
+import os
 import sh
 import re
 from pathlib import Path
@@ -38,6 +39,8 @@ class GithubExportEnv:
             else None
         )
 
+        ksu_version: str = os.getenv("KSU_VERSION", "Unknown")
+
         now: datetime = datetime.now(timezone.utc)
         current_time: str = now.strftime("%a %b %d %H:%M:%S %Y")
 
@@ -46,6 +49,7 @@ class GithubExportEnv:
             "version": self.builder.get_kernel_version(),
             "variant": self.variants.suffix,
             "susfs_version": susfs_version or "Disabled",
+            "ksu_version": ksu_version,
             "toolchain": toolchain,
             "build_time": current_time,
         }

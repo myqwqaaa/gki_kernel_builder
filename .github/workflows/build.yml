@@ -114,6 +114,7 @@ jobs:
           # version         Kernel version
           # variant         Variant suffix
           # susfs_version   SUSFS version
+          # ksu_version     KernelSU version
           # toolchain       Toolchain version
           # build_time      Build timestamp
 
@@ -142,6 +143,7 @@ jobs:
           KSU_VARIANT: ${{ inputs.KSU }}
           LXC: ${{ inputs.LXC }}
           SUSFS_VERSION: ${{ steps.build.outputs.susfs_version }}
+          KSU_VERSION: ${{ steps.build.outputs.ksu_version }}
           TOOLCHAIN: ${{ steps.build.outputs.toolchain }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -149,14 +151,17 @@ jobs:
         run: |
           RUN_LINK="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           MESSAGE=$(cat <<EOF
-          *==== Kernel CI ====*
-          *Linux Version*: $VERSION
-          *Build Date*: $BUILD_DATE
-          *KernelSU*: $KSU_VARIANT
-          *SUSFS*: $SUSFS_VERSION
-          *LXC*: $([ "$LXC" = "true" ] && echo "Included" || echo "Disabled")
-          *Toolchain*: $TOOLCHAIN
+          Kernel CI
+
+          🐧 *Linux Version*: $VERSION
+          📅 *Build Date*: $BUILD_DATE
+          🔰 *KernelSU*: $KSU_VARIANT | $KSU_VERSION
+          🎭 *SUSFS*: $SUSFS_VERSION
+          📦 *LXC*: $([ "$LXC" = "true" ] && echo "Included" || echo "Disabled")
+          🛠️*Toolchain*: $TOOLCHAIN
+
           [Workflow Run]($RUN_LINK)
+          #ci_$GITHUB_RUN_ID
           EOF
           )
 
