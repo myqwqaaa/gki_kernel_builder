@@ -1,7 +1,4 @@
-import platform
 from pathlib import Path
-import sh
-import sys
 from kernel_builder.config.config import (
     IMAGE_COMP,
     OUTPUT,
@@ -13,7 +10,6 @@ from kernel_builder.post_build.kpm import KPMPatcher
 from kernel_builder.pre_build.setup_env import SetupEnvironment
 from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.pre_build.variants import Variants
-from kernel_builder.utils import env
 from kernel_builder.utils.build import Builder
 from kernel_builder.utils.clang import fetch_latest_aosp_clang
 from kernel_builder.utils.fs import FileSystem
@@ -24,17 +20,6 @@ from kernel_builder.post_build.export_env import GithubExportEnv
 
 class KernelBuilder:
     def __init__(self) -> None:
-        if platform.system() != "Linux":
-            raise RuntimeError("Only Linux machines supported")
-
-        if env.verbose_enabled():
-            sh.Command._call_args.update(
-                {
-                    "out": sys.stdout,
-                    "err": sys.stderr,
-                }
-            )
-
         self.builder: Builder = Builder()
         self.variants: Variants = Variants()
         self.environment: SetupEnvironment = SetupEnvironment()

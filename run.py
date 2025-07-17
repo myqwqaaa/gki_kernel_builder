@@ -6,6 +6,7 @@ import argparse
 import os
 from pathlib import Path
 import shutil
+import platform
 from kernel_builder.utils.log import log
 
 
@@ -101,6 +102,8 @@ def main():
 
 
 if __name__ == "__main__":
+    if platform.system() != "Linux":
+        raise RuntimeError("Only Linux machines supported")
     try:
         main()
     except Exception as err:
