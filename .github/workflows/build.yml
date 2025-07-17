@@ -161,7 +161,7 @@ jobs:
           🛠️*Toolchain*: $TOOLCHAIN
 
           [Workflow Run]($RUN_LINK)
-          #ci_$GITHUB_RUN_ID
+          \#ci\_$GITHUB_RUN_ID
           EOF
           )
 

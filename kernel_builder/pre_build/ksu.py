@@ -1,3 +1,4 @@
+import os
 import subprocess
 from sh import jq
 from kernel_builder.config.config import WORKSPACE
@@ -35,6 +36,7 @@ class KSUInstaller:
                 )
             ).strip()
 
+        os.environ["KSU_VERSION"] = ref
         setup_url = f"https://raw.githubusercontent.com/{url.split(':', 1)[1]}/{ref}/kernel/setup.sh"
 
         log(f"Installing KernelSU from {url} | {ref}")
