@@ -1,10 +1,11 @@
-import os
 import sh
 import re
+from pathlib import Path
+from dotenv import set_key
 from sh import Command, head, sed
 from datetime import datetime, timezone
 from kernel_builder.utils.env import susfs_enabled
-from kernel_builder.config.config import OUTPUT, TOOLCHAIN, WORKSPACE
+from kernel_builder.config.config import OUTPUT, ROOT, TOOLCHAIN, WORKSPACE
 from kernel_builder.utils.build import Builder
 from kernel_builder.pre_build.variants import Variants
 from kernel_builder.utils.log import log
@@ -14,16 +15,12 @@ class GithubExportEnv:
     def __init__(self) -> None:
         self.builder: Builder = Builder()
         self.variants: Variants = Variants()
+        self.env_file: Path = ROOT / "github.env"
 
     def _write_env(self, env_map: dict[str, str]) -> None:
-        output_path = os.environ.get("GITHUB_OUTPUT")
-        if not output_path:
-            raise RuntimeError("GITHUB_OUTPUT is not set")
-
-        with open(output_path, "a") as f:
-            for k, v in env_map.items():
-                k, v = k.strip(), v.strip()
-                f.write(f"{k}={v}\n")
+        self.env_file.touch()
+        for k, v in env_map.items():
+            set_key(self.env_file, k.strip(), v.strip())
 
     def export_github_env(self) -> None:
         clang: Command = sh.Command(str(TOOLCHAIN / "clang" / "bin" / "clang"))

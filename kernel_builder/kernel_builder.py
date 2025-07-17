@@ -44,7 +44,6 @@ class KernelBuilder:
         self.susfs: SUSFSPatcher = SUSFSPatcher()
         self.flashable: FlashableBuilder = FlashableBuilder()
         self.export_env: GithubExportEnv = GithubExportEnv()
-        self.local_run: bool = env.local_run()
 
         boot_dir: Path = WORKSPACE / "out" / "arch" / "arm64" / "boot"
         image: Path = boot_dir / "Image"
@@ -83,9 +82,7 @@ class KernelBuilder:
 
         # Post build
         self.kpm.patch()
-
-        if not self.local_run:
-            self.export_env.export_github_env()
+        self.export_env.export_github_env()
 
         # Build flashable
         self.flashable.build_anykernel3()

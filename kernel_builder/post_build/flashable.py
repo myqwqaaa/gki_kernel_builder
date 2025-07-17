@@ -11,7 +11,6 @@ from kernel_builder.config.config import (
     TOOLCHAIN,
     WORKSPACE,
 )
-from kernel_builder.utils import env
 from kernel_builder.utils.command import curl
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
@@ -20,7 +19,6 @@ from kernel_builder.utils.log import log
 class FlashableBuilder:
     def __init__(self, image_comp: str | None = None) -> None:
         self.fs: FileSystem = FileSystem()
-        self.local_run: bool = env.local_run()
         self.image_comp: str = image_comp or IMAGE_COMP
         self.image_path: Path = self._resolve_image_path()
 

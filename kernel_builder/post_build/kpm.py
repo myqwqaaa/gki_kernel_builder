@@ -44,7 +44,7 @@ class KPMPatcher:
 
             for name, url in assets.items():
                 dest: Path = temp / name
-                curl("-fsSL", "-", url, dest)
+                curl("-fsSL", "-o", dest, url)
                 dest.chmod(0o755)
 
             shutil.move(image_path, temp_img)

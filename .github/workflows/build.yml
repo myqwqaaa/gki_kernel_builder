@@ -98,12 +98,16 @@ jobs:
           uv sync --frozen --no-install-project
 
       - name: Build
-        id: build
         env:
           KSU: ${{ inputs.KSU }}
           SUSFS: ${{ inputs.SUSFS }}
           LXC: ${{ inputs.LXC }}
           VERBOSE_OUTPUT: ${{ inputs.VERBOSE }}
+        run: |
+          uv run run.py build
+
+      - name: Import exported environment
+        id: build
         run: |
           # ====== build github outputs table:
           # output          Output directory
@@ -113,7 +117,14 @@ jobs:
           # toolchain       Toolchain version
           # build_time      Build timestamp
 
-          uv run run.py build
+          ENV_FILE="$GITHUB_WORKSPACE/github.env"
+          [[ -f "$ENV_FILE" ]] || { echo "::error::$ENV_FILE missing"; exit 1; }
+          while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" == \#* ]] && continue
+            value=${value//\'/}
+            echo "$key=$value"
+            echo "$key=$value" >> "$GITHUB_OUTPUT"
+          done < $ENV_FILE
 
       - name: Upload final artifacts
         uses: actions/upload-artifact@v4

@@ -17,10 +17,6 @@ def lxc_enabled(default: str = "false") -> bool:
     return _bool_env("LXC", default)
 
 
-def local_run(default: str = "false") -> bool:
-    return _bool_env("LOCAL_RUN", default)
-
-
 def verbose_enabled(default: str = "false") -> bool:
     return _bool_env("VERBOSE_OUTPUT", default)
 

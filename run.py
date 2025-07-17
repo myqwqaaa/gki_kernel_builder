@@ -68,7 +68,6 @@ def cmd_build(args: Namespace) -> None:
     os.environ["KSU"] = args.ksu
     os.environ["SUSFS"] = str(args.susfs).lower()
     os.environ["LXC"] = str(args.lxc).lower()
-    os.environ["LOCAL_RUN"] = "true"
     os.environ["VERBOSE_OUTPUT"] = str(args.verbose).lower()
 
     from kernel_builder.kernel_builder import KernelBuilder

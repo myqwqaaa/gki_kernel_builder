@@ -22,5 +22,4 @@ def test_env_var(mocker: MockerFixture) -> None:
     assert os.environ["KSU"] == "NEXT"
     assert os.environ["SUSFS"] == "false"
     assert os.environ["LXC"] == "true"
-    assert os.environ["LOCAL_RUN"] == "true"
     assert os.environ["VERBOSE_OUTPUT"] == "false"
