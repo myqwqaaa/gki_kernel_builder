@@ -73,7 +73,8 @@ def cmd_build(args: Namespace) -> None:
 
     from kernel_builder.kernel_builder import KernelBuilder
 
-    KernelBuilder().run_build()
+    builder: KernelBuilder = KernelBuilder()
+    builder.run_build()
 
 
 def cmd_clean(args: Namespace) -> None:
