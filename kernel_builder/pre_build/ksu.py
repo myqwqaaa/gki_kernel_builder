@@ -23,20 +23,21 @@ class KSUInstaller:
         if not self.source.is_simplified(url):
             url = self.source.git_simplifier(url)
 
+        user, repo = url.split(":", 1)
+        latest_tag: str = str(
+            jq(
+                "-r",
+                ".tag_name",
+                _in=authorized_curl(
+                    f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+                ),
+            )
+        ).strip()
+
         if not ref:
-            user, repo = url.split(":", 1)
+            ref = latest_tag
 
-            ref = str(
-                jq(
-                    "-r",
-                    ".tag_name",
-                    _in=authorized_curl(
-                        f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-                    ),
-                )
-            ).strip()
-
-        os.environ["KSU_VERSION"] = ref
+        os.environ["KSU_VERSION"] = latest_tag
         setup_url = f"https://raw.githubusercontent.com/{url.split(':', 1)[1]}/{ref}/kernel/setup.sh"
 
         log(f"Installing KernelSU from {url} | {ref}")
