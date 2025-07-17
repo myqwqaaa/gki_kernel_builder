@@ -23,7 +23,7 @@ class KSUInstaller:
         if not self.source.is_simplified(url):
             url = self.source.git_simplifier(url)
 
-        user, repo = url.split(":", 1)
+        user, repo = url.split(":", 1)[1].split("/", 1)
         latest_tag: str = str(
             jq(
                 "-r",
