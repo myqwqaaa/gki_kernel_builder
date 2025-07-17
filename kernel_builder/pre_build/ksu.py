@@ -31,6 +31,7 @@ class KSUInstaller:
                 _in=authorized_curl(
                     f"https://api.github.com/repos/{user}/{repo}/releases/latest"
                 ),
+                _out=None,
             )
         ).strip()
 
