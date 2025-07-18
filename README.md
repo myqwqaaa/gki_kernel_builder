@@ -139,13 +139,16 @@ Builds are performed via the custom wrapper script `run.py`
 ## Configuration
 
 > [!WARNING]
-> If you plan to build a GKI Kernel for other devices, set `LXC` to `false` or remove function completely as it only supports `xaga` (ESK Kernel).
+> If you build a GKI kernel for devices other than xaga (ESK Kernel), set LXC to false or remove the LXC function entirely.
 
 Customize your build by:
 
 * `config/config.py` – Contains kernel configuration settings.
 * `config/manifest.py` – Specifies repository sources and branches.
 * `kernel_builder.py` – The main script responsible for orchestrating the build.
+
+> [!NOTE]
+> See the dedicated guide for more information: [Kernel Builder Configuration guide](https://github.com/bachnxuan/gki_kernel_builder/tree/master/kernel_builder/config)
 
 ---
 
