@@ -1,13 +1,12 @@
-from re import Match, Pattern
 import logging
 import re
+from re import Match, Pattern
 from logging import FileHandler, Filter, Handler, LogRecord
 from pathlib import Path
 from logging import Logger
 from typing import override
 from rich.logging import RichHandler
 from rich.console import Console
-from kernel_builder.config.config import LOGFILE
 
 logger: Logger = logging.getLogger(__name__)
 console: Console = Console(force_terminal=True, color_system="auto")
@@ -33,7 +32,7 @@ class ShFilter(Filter):
         return True
 
 
-def _configure_log(
+def configure_log(
     *, level: int = logging.INFO, logfile: str | Path | None = None
 ) -> None:
     """
@@ -73,19 +72,14 @@ def _configure_log(
     )
 
 
-def log(
-    message: str, level: str = "info", *, logfile: str | Path | None = LOGFILE
-) -> None:
+def log(message: str, level: str = "info") -> None:
     """
     Simple wrapper for logging.
 
     :param message: Message to log.
     :param level: Log level, default is info.
-    :param logfile: Log file path, default is LOGFILE.
     :return: None
     """
-    _configure_log(logfile=logfile)
-
     match level.lower():
         case "debug":
             logger.debug(message)

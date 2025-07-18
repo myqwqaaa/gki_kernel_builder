@@ -6,7 +6,13 @@ from kernel_builder.constants import ROOT
 DEFCONFIG: Final[str] = "gki_defconfig"
 BUILD_USER: Final[str] = "gki-builder"
 BUILD_HOST: Final[str] = "esk"
-IMAGE_COMP: Final[Literal["raw", "lz4", "gz"]] = "gz"  # <raw|lz4|gz>
+IMAGE_COMP: Final[Literal["raw", "lz4", "gz"]] = "gz"
+
+# Clang
+CLANG_VARIANT: Final[Literal["SLIM", "AOSP", "RV", "YUKI", "LILIUM", "NEUTRON"]] = (
+    "AOSP"
+)
+CLANG_URL: str | None = None
 
 # AnyKernel3
 ANYKERNEL_REPO = "github.com:bachnxuan/AnyKernel3"
@@ -22,7 +28,7 @@ GKI_URL: Final[str] = (
 )
 
 # Logging
-LOGFILE: Final[Path | None] = None
+LOGFILE: Final[str | Path | None] = None
 
 if __name__ == "__main__":
     raise SystemExit("This file is meant to be imported, not executed.")

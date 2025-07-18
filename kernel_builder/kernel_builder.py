@@ -1,5 +1,8 @@
+import tarfile
 from pathlib import Path
-from kernel_builder.config.config import IMAGE_COMP, OUTPUT
+from kernel_builder.utils.clang import fetch_clang
+from kernel_builder.utils.command import aria2c
+from kernel_builder.config.config import CLANG_URL, CLANG_VARIANT, IMAGE_COMP, OUTPUT
 from kernel_builder.constants import TOOLCHAIN, WORKSPACE
 from kernel_builder.post_build.flashable import FlashableBuilder
 from kernel_builder.post_build.kpm import KPMPatcher
@@ -7,7 +10,6 @@ from kernel_builder.pre_build.setup_env import SetupEnvironment
 from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.pre_build.variants import Variants
 from kernel_builder.utils.build import Builder
-from kernel_builder.utils.clang import fetch_latest_aosp_clang
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
@@ -50,7 +52,18 @@ class KernelBuilder:
         self.source.clone_sources()
 
         # Clone Clang
-        fetch_latest_aosp_clang()
+        clang_url: str = CLANG_URL or fetch_clang(CLANG_VARIANT)
+        dest: Path = TOOLCHAIN
+        tarball: Path = dest / "tarball"
+        clang: Path = dest / "clang"
+
+        aria2c("-d", str(dest), "-o", "tarball", clang_url)
+        FileSystem.reset_path(clang)
+
+        with tarfile.open(tarball, "r:*") as tar:
+            tar.extractall(clang)
+
+        tarball.unlink()
 
         # Enter workspace
         self.fs.cd(WORKSPACE)
