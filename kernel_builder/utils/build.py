@@ -46,7 +46,7 @@ class Builder:
         )
         jobs = jobs or self.jobs
         log(
-            f"Start build: {self.defconfig=}, {out=}, {(jobs or self.jobs)=}, {self.image_comp=}"
+            f"Start build: {self.defconfig=}, {out=}, {jobs or self.jobs=}, {self.image_comp=}"
         )
         self._make([self.defconfig], jobs=jobs, out=out)
 
