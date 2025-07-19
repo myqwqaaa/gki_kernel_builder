@@ -28,7 +28,7 @@ class GithubExportEnv:
         clang: Command = sh.Command(str(TOOLCHAIN / "clang" / "bin" / "clang"))
         raw_toolchain = head("-n", "1", _in=clang("-v", _err_to_out=True))
         toolchain: str = str(
-            sed("s/(https..*//; s/ version//", _in=raw_toolchain, _out=None)
+            sed("s/(https..*//; s/ version//", _in=raw_toolchain)
         ).strip()
 
         susfs_version: str | None = (

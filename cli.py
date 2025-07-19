@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 from typer.main import Typer
+from typer import Option
 from pathlib import Path
 from typing import Annotated
 import importlib
@@ -12,11 +13,15 @@ import os
 app: Typer = typer.Typer(help="GKI Kernel Builder CLI")
 
 
+def _bool_env(var: str, default: bool = False) -> bool:
+    return os.getenv(var, str(default)).lower() in ("true", "1", "yes")
+
+
 @app.command()
 def build(
     ksu: Annotated[
         str,
-        typer.Option(
+        Option(
             "--ksu",
             "-k",
             envvar="KSU",
@@ -25,31 +30,28 @@ def build(
     ] = "NONE",
     susfs: Annotated[
         bool,
-        typer.Option(
+        Option(
             "--susfs/--no-susfs",
             "-s",
-            envvar="SUSFS",
             help="Enable SUSFS support",
         ),
-    ] = False,
+    ] = _bool_env("SUSFS"),
     lxc: Annotated[
         bool,
-        typer.Option(
+        Option(
             "--lxc/--no-lxc",
             "-l",
-            envvar="LXC",
             help="Enable or disable LXC",
         ),
-    ] = False,
+    ] = _bool_env("LXC"),
     verbose: Annotated[
         bool,
-        typer.Option(
+        Option(
             "--verbose/--no-verbose",
             "-v",
-            envvar="VERBOSE_OUTPUT",
             help="Verbose output",
         ),
-    ] = False,
+    ] = _bool_env("VERBOSE_OUTPUT"),
 ) -> None:
     if ksu == "NONE" and susfs:
         typer.secho("[ERROR] SUSFS requires KernelSU", err=True, fg=typer.colors.RED)

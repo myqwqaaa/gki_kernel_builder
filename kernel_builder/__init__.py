@@ -1,4 +1,3 @@
-import sys
 import sh
 import logging
 from kernel_builder.utils.env import verbose_enabled
@@ -11,4 +10,4 @@ configure_log(
 )
 
 if verbose_enabled():
-    sh.Command._call_args.update({"out": sys.stdout, "err": sys.stderr})
+    sh.Command._call_args.update({"tee": True})
