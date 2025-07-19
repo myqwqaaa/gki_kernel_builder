@@ -107,9 +107,8 @@ jobs:
           uv run cli.py build
 
       - name: Import exported environment
-        id: build
         run: |
-          # ====== build github outputs table:
+          # ====== build github env table:
           # output          Output directory
           # version         Kernel version
           # variant         Variant suffix
@@ -119,32 +118,43 @@ jobs:
           # build_time      Build timestamp
 
           ENV_FILE="$GITHUB_WORKSPACE/github.env"
-          [[ -f "$ENV_FILE" ]] || { echo "::error::$ENV_FILE missing"; exit 1; }
+          if [[ -f "$ENV_FILE" ]]; || { echo "::error::$ENV_FILE missing"; exit 1; }
           while IFS='=' read -r key value; do
+            # Ignore empty lines
             [[ -z "$key" || "$key" == \#* ]] && continue
+
+            # Strip leading and trailing whitespace
+            key=$(echo "$key" | xargs)
+            value=$(echo "$value" | xargs)
+
+            # Strip ' ' from string
             value=${value//\'/}
-            echo "$key=$value"
-            echo "$key=$value" >> "$GITHUB_OUTPUT"
+
+            # Validate key and value
+            if [[ -n "$key" && -n "$value" ]]; then
+              echo "$key=$value"
+              echo "$key=$value" >> "$GITHUB_ENV"
+            fi
           done < $ENV_FILE
 
       - name: Upload final artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ESK${{ steps.build.outputs.variant }}
+          name: ESK${{ env.variant }}
           path: |
-            ${{ steps.build.outputs.output }}/ESK-${{ steps.build.outputs.version }}${{ steps.build.outputs.variant }}-AnyKernel3.zip
-            ${{ steps.build.outputs.output }}/ESK-${{ steps.build.outputs.version }}${{ steps.build.outputs.variant }}-boot.img
+            ${{ env.output }}/ESK-${{ env.version }}${{ env.variant }}-AnyKernel3.zip
+            ${{ env.output }}/ESK-${{ env.version }}${{ env.variant }}-boot.img
 
       - name: Notify Telegram
         if: ${{ inputs.NOTIFY == 'true' }}
         env:
-          VERSION: ${{ steps.build.outputs.version }}
-          BUILD_DATE: ${{ steps.build.outputs.build_time }}
+          VERSION: ${{ env.version }}
+          BUILD_DATE: ${{ env.build_time }}
           KSU_VARIANT: ${{ inputs.KSU }}
           LXC: ${{ inputs.LXC }}
-          SUSFS_VERSION: ${{ steps.build.outputs.susfs_version }}
-          KSU_VERSION: ${{ steps.build.outputs.ksu_version }}
-          TOOLCHAIN: ${{ steps.build.outputs.toolchain }}
+          SUSFS_VERSION: ${{ env.susfs_version }}
+          KSU_VERSION: ${{ env.ksu_version }}
+          TOOLCHAIN: ${{ env.toolchain }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
