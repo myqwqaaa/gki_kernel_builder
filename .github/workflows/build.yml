@@ -22,6 +22,38 @@ on:
         type: string
         required: true
 
+    outputs:
+      output:
+        description: 'Output directory'
+        value: ${{ jobs.build.outputs.output }}
+      version:
+        description: 'Kernel version'
+        value: ${{ jobs.build.outputs.version }}
+      variant:
+        description: 'Variant suffix'
+        value: ${{ jobs.build.outputs.variant }}
+      susfs_version:
+        description: 'SUSFS version'
+        value: ${{ jobs.build.outputs.susfs_version }}
+      ksu_version:
+        description: 'KernelSU version'
+        value: ${{ jobs.build.outputs.ksu_version }}
+      toolchain:
+        description: 'Toolchain version'
+        value: ${{ jobs.build.outputs.toolchain }}
+      build_time:
+        description: 'Build timestamp'
+        value: ${{ jobs.build.outputs.build_time }}
+      release_repo:
+        description: 'Release repo'
+        value: ${{ jobs.build.outputs.release_repo }}
+      release_branch:
+        description: 'Release branch'
+        value: ${{ jobs.build.outputs.release_branch }}
+      kernel_name:
+        description: 'Kernel name'
+        value: ${{ jobs.build.outputs.kernel_name }}
+
   workflow_dispatch:
     inputs:
       KSU:
@@ -61,12 +93,25 @@ env:
   TERM: xterm-256color
 
 jobs:
-  default:
+  build:
     runs-on: ubuntu-latest
+
+    outputs:
+      output:         ${{ steps.import_env.outputs.output }}
+      version:        ${{ steps.import_env.outputs.version }}
+      variant:        ${{ steps.import_env.outputs.variant }}
+      susfs_version:  ${{ steps.import_env.outputs.susfs_version }}
+      ksu_version:    ${{ steps.import_env.outputs.ksu_version }}
+      toolchain:      ${{ steps.import_env.outputs.toolchain }}
+      build_time:     ${{ steps.import_env.outputs.build_time }}
+      release_repo:   ${{ steps.import_env.outputs.release_repo }}
+      release_branch: ${{ steps.import_env.outputs.release_branch }}
+      kernel_name:    ${{ steps.import_env.outputs.kernel_name }}
+
     env:
-        TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        TG_CHAT_ID:   ${{ secrets.TG_CHAT_ID }}
         TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN:     ${{ secrets.GH_TOKEN }}
     steps:
       - name: Fail SUSFS requirement check
         if: ${{ inputs.SUSFS == 'true' && inputs.KSU == 'NONE' }}
@@ -99,14 +144,15 @@ jobs:
 
       - name: Build
         env:
-          KSU: ${{ inputs.KSU }}
+          KSU:   ${{ inputs.KSU }}
           SUSFS: ${{ inputs.SUSFS }}
-          LXC: ${{ inputs.LXC }}
+          LXC:   ${{ inputs.LXC }}
           VERBOSE_OUTPUT: ${{ inputs.VERBOSE }}
         run: |
           uv run cli.py build
 
       - name: Import exported environment
+        id: import_env
         run: |
           # ====== build github env table:
           # output          Output directory
@@ -116,6 +162,9 @@ jobs:
           # ksu_version     KernelSU version
           # toolchain       Toolchain version
           # build_time      Build timestamp
+          # release_repo    Release repo
+          # release_branch  Release branch
+          # kernel_name     Kernel name
 
           ENV_FILE="$GITHUB_WORKSPACE/github.env"
           if [[ -f "$ENV_FILE" ]]; || { echo "::error::$ENV_FILE missing"; exit 1; }
@@ -134,34 +183,36 @@ jobs:
             if [[ -n "$key" && -n "$value" ]]; then
               echo "$key=$value"
               echo "$key=$value" >> "$GITHUB_ENV"
+              echo "$key=$value" >> "$GITHUB_OUTPUT"
             fi
           done < $ENV_FILE
 
       - name: Upload final artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ESK${{ env.variant }}
+          name: ${{ env.kernel_name }}${{ env.variant }}
           path: |
-            ${{ env.output }}/ESK-${{ env.version }}${{ env.variant }}-AnyKernel3.zip
-            ${{ env.output }}/ESK-${{ env.version }}${{ env.variant }}-boot.img
+            ${{ env.output }}/${{ env.kernel_name }}-${{ env.version }}${{ env.variant }}-AnyKernel3.zip
+            ${{ env.output }}/${{ env.kernel_name }}-${{ env.version }}${{ env.variant }}-boot.img
 
       - name: Notify Telegram
         if: ${{ inputs.NOTIFY == 'true' }}
         env:
-          VERSION: ${{ env.version }}
-          BUILD_DATE: ${{ env.build_time }}
-          KSU_VARIANT: ${{ inputs.KSU }}
-          LXC: ${{ inputs.LXC }}
-          SUSFS_VERSION: ${{ env.susfs_version }}
-          KSU_VERSION: ${{ env.ksu_version }}
-          TOOLCHAIN: ${{ env.toolchain }}
+          VERSION:           ${{ env.version }}
+          BUILD_DATE:        ${{ env.build_time }}
+          KSU_VARIANT:       ${{ inputs.KSU }}
+          LXC:               ${{ inputs.LXC }}
+          SUSFS_VERSION:     ${{ env.susfs_version }}
+          KSU_VERSION:       ${{ env.ksu_version }}
+          TOOLCHAIN:         ${{ env.toolchain }}
+          KERNEL_NAME:       ${{ env.kernel_name }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ID:     ${{ github.run_id }}
         run: |
           RUN_LINK="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           MESSAGE=$(cat <<EOF
-          Kernel CI
+          $KERNEL_NAME Kernel CI
 
           🐧 *Linux Version*: $VERSION
           📅 *Build Date*: $BUILD_DATE

@@ -4,7 +4,7 @@ permissions:
   actions: write
 
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
 
 jobs:
   build:
@@ -65,6 +65,18 @@ jobs:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
+    env:
+      OUTPUT_DIR:     ${{ needs.build.outputs.output }}
+      VERSION:        ${{ needs.build.outputs.version }}
+      VARIANT:        ${{ needs.build.outputs.variant }}
+      SUSFS_VER:      ${{ needs.build.outputs.susfs_version }}
+      KSU_VER:        ${{ needs.build.outputs.ksu_version }}
+      TOOLCHAIN:      ${{ needs.build.outputs.toolchain }}
+      BUILD_DATE:     ${{ needs.build.outputs.build_time }}
+      RELEASE_REPO:   ${{ needs.build.outputs.release_repo }}
+      RELEASE_BRANCH: ${{ needs.build.outputs.release_branch }}
+      KERNEL_NAME:    ${{ needs.build.outputs.kernel_name }}
+
     steps:
       - name: Checkout current repo
         uses: actions/checkout@v4
@@ -75,14 +87,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: release_files
-
-      - name: Setup env
-        run: |
-          RELEASE_REPO="bachnxuan/android12-5.10-lts"
-          BRANCH_TAG="esk/main"
-
-          echo "RELEASE_REPO=${RELEASE_REPO}" >> $GITHUB_ENV
-          echo "BRANCH_TAG=${BRANCH_TAG}" >> $GITHUB_ENV
 
       - name: Generate new tag
         env:
@@ -113,5 +117,5 @@ jobs:
             ## 📢 ESK KERNEL
           prerelease: true
           generate_release_notes: true
-          target_commitish: ${{ env.BRANCH_TAG }}
+          target_commitish: ${{ env.RELEASE_BRANCH }}
           files: release_files/**/*

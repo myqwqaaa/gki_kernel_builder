@@ -6,7 +6,12 @@ from dotenv import set_key
 from sh import Command, head, sed
 from datetime import datetime, timezone
 from kernel_builder.utils.env import susfs_enabled
-from kernel_builder.config.config import OUTPUT
+from kernel_builder.config.config import (
+    KERNEL_NAME,
+    OUTPUT,
+    RELEASE_BRANCH,
+    RELEASE_REPO,
+)
 from kernel_builder.constants import ROOT, TOOLCHAIN, WORKSPACE
 from kernel_builder.utils.build import Builder
 from kernel_builder.pre_build.variants import Variants
@@ -25,12 +30,14 @@ class GithubExportEnv:
             set_key(self.env_file, k.strip(), v.strip())
 
     def export_github_env(self) -> None:
+        # Get Clang version
         clang: Command = sh.Command(str(TOOLCHAIN / "clang" / "bin" / "clang"))
         raw_toolchain = head("-n", "1", _in=clang("-v", _err_to_out=True))
         toolchain: str = str(
             sed("s/(https..*//; s/ version//", _in=raw_toolchain)
         ).strip()
 
+        # Get SUSFS version
         susfs_version: str | None = (
             re.search(
                 r"v\d+\.\d+\.\d+",
@@ -40,11 +47,14 @@ class GithubExportEnv:
             else None
         )
 
+        # Get KernelSU version
         ksu_version: str = os.getenv("KSU_VERSION", "Unknown")
 
+        # Get build timestamp
         now: datetime = datetime.now(timezone.utc)
         current_time: str = now.strftime("%a %b %d %H:%M:%S %Y")
 
+        # Writing Env
         env_map: dict[str, str] = {
             "output": str(OUTPUT),
             "version": self.builder.get_kernel_version(),
@@ -53,6 +63,9 @@ class GithubExportEnv:
             "ksu_version": ksu_version,
             "toolchain": toolchain,
             "build_time": current_time,
+            "release_repo": RELEASE_REPO,
+            "release_branch": RELEASE_BRANCH,
+            "kernel_name": KERNEL_NAME,
         }
         log(f"Environment map to export: {env_map}")
         self._write_env(env_map)

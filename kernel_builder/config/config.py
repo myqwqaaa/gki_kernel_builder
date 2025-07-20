@@ -3,10 +3,15 @@ from typing import Final, Literal
 from kernel_builder.constants import ROOT
 
 # ---- Build Info
+KERNEL_NAME: Final[str] = "ESK"
 DEFCONFIG: Final[str] = "gki_defconfig"
 BUILD_USER: Final[str] = "gki-builder"
 BUILD_HOST: Final[str] = "esk"
 IMAGE_COMP: Final[Literal["raw", "lz4", "gz"]] = "gz"
+
+# ---- Release
+RELEASE_REPO: Final[str] = "bachnxuan/android12-5.10-lts"
+RELEASE_BRANCH: Final[str] = "esk/main"
 
 # ---- Clang
 CLANG_VARIANT: Final[Literal["SLIM", "AOSP", "RV", "YUKI", "LILIUM", "NEUTRON"]] = (

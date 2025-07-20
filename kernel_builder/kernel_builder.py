@@ -2,7 +2,13 @@ import tarfile
 from pathlib import Path
 from kernel_builder.utils.clang import fetch_clang
 from kernel_builder.utils.command import aria2c
-from kernel_builder.config.config import CLANG_URL, CLANG_VARIANT, IMAGE_COMP, OUTPUT
+from kernel_builder.config.config import (
+    CLANG_URL,
+    CLANG_VARIANT,
+    IMAGE_COMP,
+    KERNEL_NAME,
+    OUTPUT,
+)
 from kernel_builder.constants import TOOLCHAIN, WORKSPACE
 from kernel_builder.post_build.flashable import FlashableBuilder
 from kernel_builder.post_build.kpm import KPMPatcher
@@ -99,8 +105,10 @@ class KernelBuilder:
         anykernel_src: Path = OUTPUT / "AnyKernel3.zip"
         boot_src: Path = OUTPUT / "boot.img"
 
-        anykernel_dest: Path = OUTPUT / f"ESK-{version}{suffix}-AnyKernel3.zip"
-        boot_dest: Path = OUTPUT / f"ESK-{version}{suffix}-boot.img"
+        anykernel_dest: Path = (
+            OUTPUT / f"{KERNEL_NAME}-{version}{suffix}-AnyKernel3.zip"
+        )
+        boot_dest: Path = OUTPUT / f"{KERNEL_NAME}-{version}{suffix}-boot.img"
 
         anykernel_src.rename(anykernel_dest)
         boot_src.rename(boot_dest)
