@@ -78,7 +78,7 @@ def clean_init(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     fake_github_env.touch()
     fake_github_env.write_text("DUMMY=True")
 
-    monkeypatch.setattr(config_mod, "OUTPUT", fake_output)
+    monkeypatch.setattr(const_mod, "OUTPUT", fake_output)
     monkeypatch.setattr(const_mod, "WORKSPACE", fake_workspace)
     monkeypatch.setattr(const_mod, "TOOLCHAIN", fake_toolchain)
     monkeypatch.setattr(const_mod, "ROOT", fake_root)
