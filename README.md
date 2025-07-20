@@ -12,6 +12,7 @@ Effortlessly building Android Generic Kernel Image (GKI).
 - [Setup Kernel Builder](#setup-kernel-builder)
 - [Build the kernel](#build-the-kernel)
   - [Quick Start](#quick-start)
+  - [Setup Environment](#setup-environment)
   - [CLI Structure](#cli-structure)
   - [Example Commands](#example-commands)
 - [GitHub Workflows](#github-workflows)
@@ -57,6 +58,14 @@ python3 -m pip install uv
 ## Build the kernel
 
 Builds are performed via the custom wrapper script `cli.py`
+
+### Setup Environment
+
+> [!NOTE]
+> PAT scopes (read and write): `workflow`, `content`
+
+1. Rename `.env.template` to `.env`
+2. Fill in the GH_TOKEN in `.env`
 
 ### Quick Start
 
@@ -104,6 +113,7 @@ uv run cli.py build --verbose --ksu SUKI --no-susfs --no-lxc
 1. **Fork** this repo to your GitHub account.
 
 2. **Add secret** `GH_TOKEN`
+
    - PAT scopes (read and write): `workflow`, `content`
    - Add PAT access to your release and kernel builder repo
    - Repo → Settings → Secrets → Actions → **New secret**.
