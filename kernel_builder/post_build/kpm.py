@@ -8,12 +8,14 @@ from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.config.config import IMAGE_COMP
 from kernel_builder.constants import WORKSPACE
+from kernel_builder.utils.env import ksu_variant
 
 
 class KPMPatcher:
     def __init__(self) -> None:
         self.fs: FileSystem = FileSystem()
         self.image_comp: str = IMAGE_COMP
+        self.ksu: str = ksu_variant()
 
     def _open(self, path: Path, mode: str):
         if self.image_comp == "gz":
@@ -23,6 +25,9 @@ class KPMPatcher:
         return path.open(mode)
 
     def patch(self) -> None:
+        if self.ksu != "SUKI":
+            return
+        
         log("Patching KPM")
         cwd: Path = Path.cwd()
         temp: Path = cwd / "temp"
