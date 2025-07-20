@@ -7,9 +7,8 @@ from kernel_builder.config.config import (
     CLANG_VARIANT,
     IMAGE_COMP,
     KERNEL_NAME,
-    OUTPUT,
 )
-from kernel_builder.constants import TOOLCHAIN, WORKSPACE
+from kernel_builder.constants import TOOLCHAIN, WORKSPACE, OUTPUT
 from kernel_builder.post_build.flashable import FlashableBuilder
 from kernel_builder.post_build.kpm import KPMPatcher
 from kernel_builder.pre_build.setup_env import SetupEnvironment

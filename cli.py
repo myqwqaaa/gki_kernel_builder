@@ -5,10 +5,15 @@ from typer.main import Typer
 from typer import Option
 from pathlib import Path
 from typing import Annotated
-import importlib
+from kernel_builder.utils.log import configure_log
+from kernel_builder.config.config import LOGFILE
+from kernel_builder.constants import WORKSPACE, TOOLCHAIN, ROOT, OUTPUT
+from kernel_builder.kernel_builder import KernelBuilder
 import shutil
 import typer
+import dotenv
 import os
+import sh
 
 app: Typer = typer.Typer(help="GKI Kernel Builder CLI")
 
@@ -57,7 +62,14 @@ def build(
         typer.secho("[ERROR] SUSFS requires KernelSU", err=True, fg=typer.colors.RED)
         raise typer.Exit(1)
 
+    if os.getenv("GITHUB_ACTIONS") != "true":
+        dotenv.load_dotenv()
+
     typer.echo(message=f"Start Build: {ksu=}, {susfs=}, {lxc=}, {verbose=}")
+
+    configure_log(logfile=LOGFILE)
+    if verbose:
+        sh.Command._call_args.update({"tee": True})
 
     os.environ.update(
         KSU=str(ksu),
@@ -66,9 +78,6 @@ def build(
         VERBOSE_OUTPUT=str(verbose).lower(),
     )
 
-    KernelBuilder = importlib.import_module(
-        "kernel_builder.kernel_builder"
-    ).KernelBuilder
     KernelBuilder().run_build()
 
 
@@ -83,9 +92,6 @@ def clean(
         ),
     ] = False,
 ) -> None:
-    from kernel_builder.config.config import OUTPUT
-    from kernel_builder.constants import WORKSPACE, TOOLCHAIN, ROOT
-
     targets: list[Path] = [WORKSPACE, TOOLCHAIN]
 
     if all:

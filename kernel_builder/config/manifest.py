@@ -1,5 +1,5 @@
 from kernel_builder.constants import WORKSPACE, TOOLCHAIN
-from .config import ANYKERNEL_REPO, ANYKERNEL_BRANCH
+from .config import ANYKERNEL_REPO, ANYKERNEL_BRANCH, KERNEL_BRANCH, KERNEL_REPO
 from typing import Final, TypeAlias
 
 # Simplified Git link format
@@ -15,8 +15,8 @@ from typing import Final, TypeAlias
 Source: TypeAlias = Final[dict[str, str]]
 
 KERNEL: Source = {
-    "url": "github.com:bachnxuan/android12-5.10-lts",
-    "branch": "esk/main",
+    "url": KERNEL_REPO,
+    "branch": KERNEL_BRANCH,
     "to": str(WORKSPACE),
 }
 

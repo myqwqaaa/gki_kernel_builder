@@ -9,6 +9,14 @@ BUILD_USER: Final[str] = "gki-builder"
 BUILD_HOST: Final[str] = "esk"
 IMAGE_COMP: Final[Literal["raw", "lz4", "gz"]] = "gz"
 
+# ---- Kernel
+KERNEL_REPO: Final[str] = "github.com:bachnxuan/android12-5.10-lts"
+KERNEL_BRANCH: Final[str] = "esk/maim"
+
+# ---- AnyKernel3
+ANYKERNEL_REPO = "github.com:bachnxuan/AnyKernel3"
+ANYKERNEL_BRANCH = "android12-5.10"
+
 # ---- Release
 RELEASE_REPO: Final[str] = "bachnxuan/android12-5.10-lts"
 RELEASE_BRANCH: Final[str] = "esk/main"
@@ -20,13 +28,6 @@ CLANG_VARIANT: Final[Literal["SLIM", "AOSP", "RV", "YUKI", "LILIUM", "NEUTRON"]]
 
 # Optional: Set custom clang link (override CLANG_VARIANT)
 CLANG_URL: str | None = None
-
-# ---- AnyKernel3
-ANYKERNEL_REPO = "github.com:bachnxuan/AnyKernel3"
-ANYKERNEL_BRANCH = "android12-5.10"
-
-# ---- Build Output
-OUTPUT: Final[Path] = ROOT / "dist"
 
 # ---- Boot Image Config
 BOOT_SIGNING_KEY: Final[Path] = ROOT / "key" / "key.pem"
