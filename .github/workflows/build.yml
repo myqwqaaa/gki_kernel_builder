@@ -124,7 +124,22 @@ jobs:
         with:
           fetch-depth: 1
           submodules: true
-
+          
+      - name: Check required secrets
+        env:
+          NOTIFY: ${{ inputs.NOTIFY }}
+        run: |
+          ret=0
+          if [[ "$NOTIFY" == "true" ]]; then
+            [[ -z "$TG_CHAT_ID"   ]] && { echo "::error::Missing TG_CHAT_ID";    ((ret++)); }
+            [[ -z "$TG_BOT_TOKEN" ]] && { echo "::error::Missing TG_BOT_TOKEN";  ((ret++)); }
+          fi
+          [[ -z "$GH_TOKEN" ]] && { echo "::error::Missing GH_TOKEN"; ((ret++)); }
+          if (( ret )); then
+            echo "::error::Required secrets are missing. Please refer to README.md for proper configuration."
+            exit $ret
+          fi
+    
       - name: astral-sh/setup-uv
         uses: astral-sh/setup-uv@v6.4.1
         with:
