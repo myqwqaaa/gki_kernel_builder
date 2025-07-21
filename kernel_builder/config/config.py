@@ -11,7 +11,7 @@ IMAGE_COMP: Final[Literal["raw", "lz4", "gz"]] = "gz"
 
 # ---- Kernel
 KERNEL_REPO: Final[str] = "github.com:bachnxuan/android12-5.10-lts"
-KERNEL_BRANCH: Final[str] = "esk/maim"
+KERNEL_BRANCH: Final[str] = "esk/main"
 
 # ---- AnyKernel3
 ANYKERNEL_REPO = "github.com:bachnxuan/AnyKernel3"

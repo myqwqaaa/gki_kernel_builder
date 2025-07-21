@@ -42,7 +42,7 @@ python3 -m pip install uv
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/bachnxuan/gki_kernel_builder.git
+   git clone --recurse-submodule https://github.com/bachnxuan/gki_kernel_builder.git
    cd gki_kernel_builder
    ```
 

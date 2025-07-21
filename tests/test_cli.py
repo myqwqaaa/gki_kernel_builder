@@ -1,11 +1,9 @@
-from typing import Any
-
-
 from pathlib import Path
 from click.testing import Result
 from pytest_mock import MockerFixture, MockType
 from typer.testing import CliRunner
 from cli import app
+import cli
 import os
 import pytest
 
@@ -13,9 +11,7 @@ runner: CliRunner = CliRunner()
 
 
 def test_env_var(mocker: MockerFixture) -> None:
-    fake: MockType = mocker.patch(
-        "kernel_builder.kernel_builder.KernelBuilder", autospec=True
-    )
+    fake: MockType = mocker.patch("cli.KernelBuilder", autospec=True)
     result: Result = runner.invoke(
         app, ["build", "--ksu", "SUKI", "--no-susfs", "--lxc", "--no-verbose"]
     )
@@ -48,22 +44,18 @@ def test_build_guard(
     if susfs:
         cmd.append("--susfs")
 
-    fake: MockType = mocker.patch(
-        "kernel_builder.kernel_builder.KernelBuilder", autospec=True
-    )
+    fake: MockType = mocker.patch("cli.KernelBuilder", autospec=True)
     result: Result = runner.invoke(app, cmd)
 
     if expect_exit:
         assert result.exit_code != 0
     else:
+        fake.assert_called_once_with()
         assert result.exit_code == 0
 
 
 @pytest.fixture()
 def clean_init(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    import kernel_builder.config.config as config_mod
-    import kernel_builder.constants as const_mod
-
     fake: Path = tmp_path / "out_dir"
     fake.mkdir()
 
@@ -78,10 +70,10 @@ def clean_init(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     fake_github_env.touch()
     fake_github_env.write_text("DUMMY=True")
 
-    monkeypatch.setattr(const_mod, "OUTPUT", fake_output)
-    monkeypatch.setattr(const_mod, "WORKSPACE", fake_workspace)
-    monkeypatch.setattr(const_mod, "TOOLCHAIN", fake_toolchain)
-    monkeypatch.setattr(const_mod, "ROOT", fake_root)
+    monkeypatch.setattr(cli, "OUTPUT", fake_output)
+    monkeypatch.setattr(cli, "WORKSPACE", fake_workspace)
+    monkeypatch.setattr(cli, "TOOLCHAIN", fake_toolchain)
+    monkeypatch.setattr(cli, "ROOT", fake_root)
 
 
 def test_clean(tmp_path: Path, clean_init) -> None:

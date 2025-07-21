@@ -6,6 +6,7 @@ ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 SRC: Final[Path] = Path(__file__).resolve().parent
 
 OUTPUT: Final[Path] = ROOT / "dist"
+WILD_PATCHES: Path = ROOT / "wild_patches"
 WORKSPACE: Final[Path] = ROOT / "kernel"
 TOOLCHAIN: Final[Path] = ROOT / "toolchain"
 PATCHES: Final[Path] = ROOT / "kernel_patches"

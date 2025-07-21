@@ -3,7 +3,7 @@ import os
 import re
 from typing import override
 from kernel_builder.interface.patcher import PatcherInterface
-from kernel_builder.constants import WORKSPACE
+from kernel_builder.constants import WILD_PATCHES, WORKSPACE
 from kernel_builder.utils.env import ksu_variant, susfs_enabled
 from kernel_builder.utils.command import apply_patch
 from kernel_builder.utils.log import log
@@ -39,7 +39,6 @@ class SUSFSPatcher(PatcherInterface):
         os.chdir(WORKSPACE)
 
         SUSFS: Path = WORKSPACE / "susfs4ksu" / "kernel_patches"
-        WILD_PATCHES: Path = WORKSPACE / "kernel_patches"
 
         GKI_SUSFS: Path = SUSFS / "50_add_susfs_in_gki-android12-5.10.patch"
         KSU_SUSFS: Path = SUSFS / "KernelSU" / "10_enable_susfs_for_ksu.patch"
