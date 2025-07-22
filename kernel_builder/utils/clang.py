@@ -1,54 +1,39 @@
-import json
-from typing import Any, Final
-from kernel_builder.utils.command import authorized_curl, curl
+from functools import partial
+from typing import Final
+from kernel_builder.utils.command import curl
+from kernel_builder.utils.github import GithubAPI
 from sh import sed, tail, sort, grep
 
 # Toolchain Repo
-SLIM_TOOLCHAIN_URL: Final[str] = "https://www.kernel.org/pub/tools/llvm/files/"
-AOSP_TOOLCHAIN_URL: Final[str] = (
+SLIM_CLANG: Final[str] = "https://www.kernel.org/pub/tools/llvm/files/"
+AOSP_CLANG: Final[str] = (
     "https://api.github.com/repos/bachnxuan/aosp_clang_mirror/releases/latest"
 )
-RV_TOOLCHAIN_URL: Final[str] = (
-    "https://api.github.com/repos/Rv-Project/RvClang/releases/latest"
-)
-YUKI_TOOLCHAIN_URL: Final[str] = (
+RV_CLANG: Final[str] = "https://api.github.com/repos/Rv-Project/RvClang/releases/latest"
+YUKI_CLANG: Final[str] = (
     "https://api.github.com/repos/Klozz/Yuki_clang_releases/releases/latest"
 )
-LILIUM_TOOLCHAIN_URL: Final[str] = (
+LILIUM_CLANG: Final[str] = (
     "https://api.github.com/repos/liliumproject/clang/releases/latest"
 )
-TNF_TOOLCHAIN_URL: Final[str] = (
+TNF_CLANG: Final[str] = (
     "https://api.github.com/repos/topnotchfreaks/clang/releases/latest"
 )
-NEUTRON_TOOLCHAIN_URL: Final[str] = (
+NEUTRON_CLANG: Final[str] = (
     "https://api.github.com/repos/Neutron-Toolchains/clang-build-catalogue/releases/latest"
 )
 
-
-def _fetch_latest_github_release(repo_api: str) -> str:
-    raw: str = authorized_curl(repo_api)
-    data: dict[str, Any] = json.loads(raw)
-    release_url: str | None = next(
-        (
-            asset["browser_download_url"]
-            for asset in data.get("assets", [])
-            if asset.get("browser_download_url", "").endswith(".tar.gz")
-        ),
-        None,
-    )
-
-    if release_url is None:
-        raise Exception()
-
-    return release_url
+fetch_clang: partial[str] = partial(
+    GithubAPI().fetch_latest_download_url, extension=".tar.gz"
+)
 
 
-def fetch_clang(variants: str) -> str:
+def fetch_clang_url(variants: str) -> str:
     match variants.upper():
         case "SLIM":
             return str(
                 sed(
-                    f"s|^|{SLIM_TOOLCHAIN_URL}|",
+                    f"s|^|{SLIM_CLANG}|",
                     _in=tail(
                         "-n1",
                         _in=sort(
@@ -56,23 +41,23 @@ def fetch_clang(variants: str) -> str:
                             _in=grep(
                                 "-oP",
                                 r"llvm-[\d.]+-x86_64\.tar\.xz",
-                                _in=curl(SLIM_TOOLCHAIN_URL),
+                                _in=curl(SLIM_CLANG),
                             ),
                         ),
                     ),
                 )
             ).strip()
         case "AOSP":
-            return _fetch_latest_github_release(AOSP_TOOLCHAIN_URL)
+            return fetch_clang(AOSP_CLANG)
         case "RV":
-            return _fetch_latest_github_release(RV_TOOLCHAIN_URL)
+            return fetch_clang(RV_CLANG)
         case "YUKI":
-            return _fetch_latest_github_release(YUKI_TOOLCHAIN_URL)
+            return fetch_clang(YUKI_CLANG)
         case "LILIUM":
-            return _fetch_latest_github_release(LILIUM_TOOLCHAIN_URL)
+            return fetch_clang(LILIUM_CLANG)
         case "TNF":
-            return _fetch_latest_github_release(TNF_TOOLCHAIN_URL)
+            return fetch_clang(TNF_CLANG)
         case "NEUTRON":
-            return _fetch_latest_github_release(NEUTRON_TOOLCHAIN_URL)
+            return GithubAPI().fetch_latest_download_url(NEUTRON_CLANG, "tar.zst")
         case _:
             raise Exception("Unknown clang variant")

@@ -1,11 +1,10 @@
 import os
 import subprocess
-from sh import jq
 from kernel_builder.constants import WORKSPACE
+from kernel_builder.utils.github import GithubAPI
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
 from kernel_builder.utils import env
-from kernel_builder.utils.command import authorized_curl
 
 
 class KSUInstaller:
@@ -16,6 +15,7 @@ class KSUInstaller:
 
     def __init__(self) -> None:
         self.source: SourceManager = SourceManager()
+        self.gh_api: GithubAPI = GithubAPI()
         self.variant: str = env.ksu_variant()
         self.use_susfs: bool = env.susfs_enabled()
 
@@ -24,15 +24,9 @@ class KSUInstaller:
             url = self.source.git_simplifier(url)
 
         user, repo = url.split(":", 1)[1].split("/", 1)
-        latest_tag: str = str(
-            jq(
-                "-r",
-                ".tag_name",
-                _in=authorized_curl(
-                    f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-                ),
-            )
-        ).strip()
+        latest_tag: str = self.gh_api.fetch_latest_tag(
+            f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+        )
 
         if not ref:
             ref = latest_tag
