@@ -1,6 +1,6 @@
 import tarfile
 from pathlib import Path
-from kernel_builder.utils.clang import fetch_clang
+from kernel_builder.utils.clang import fetch_clang_url
 from kernel_builder.utils.command import aria2c
 from kernel_builder.config.config import (
     CLANG_URL,
@@ -67,7 +67,7 @@ class KernelBuilder:
         self.source.clone_sources()
 
         # Clone Clang
-        clang_url: str = CLANG_URL or fetch_clang(CLANG_VARIANT)
+        clang_url: str = CLANG_URL or fetch_clang_url(CLANG_VARIANT)
         dest: Path = TOOLCHAIN
         tarball: Path = dest / "tarball"
         clang: Path = dest / "clang"

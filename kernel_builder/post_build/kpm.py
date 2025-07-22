@@ -27,7 +27,7 @@ class KPMPatcher:
     def patch(self) -> None:
         if self.ksu != "SUKI":
             return
-        
+
         log("Patching KPM")
         cwd: Path = Path.cwd()
         temp: Path = cwd / "temp"

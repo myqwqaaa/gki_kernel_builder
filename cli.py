@@ -15,7 +15,7 @@ import dotenv
 import os
 import sh
 
-app: Typer = typer.Typer(help="GKI Kernel Builder CLI")
+app: Typer = typer.Typer(help="GKI Kernel Builder CLI", pretty_exceptions_enable=False)
 
 
 def _bool_env(var: str, default: bool = False) -> bool:

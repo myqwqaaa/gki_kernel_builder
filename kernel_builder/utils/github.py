@@ -1,16 +1,14 @@
 from typing import Any
 from requests.models import Response
-from kernel_builder.utils.env import github_token
 import requests
+import os
 
 
 class GithubAPI:
-    def __init__(self) -> None:
-        self.token: str = github_token()
-        self.headers: dict[str, str] = {"Authorization": f"token {self.token}"}
-
     def _fetch_raw(self, api: str) -> dict[Any, Any]:
-        resp: Response = requests.get(api, headers=self.headers, timeout=10)
+        resp: Response = requests.get(
+            api, headers={"Authorization": f"token {os.getenv('GH_TOKEN')}"}, timeout=10
+        )
         resp.raise_for_status()
         return resp.json()
 
