@@ -1,6 +1,10 @@
+from pathlib import Path
+
+
 import os
 import subprocess
-from kernel_builder.constants import WORKSPACE
+from kernel_builder.constants import PATCHES, WORKSPACE
+from kernel_builder.utils.command import apply_patch
 from kernel_builder.utils.github import GithubAPI
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
@@ -53,6 +57,12 @@ class KSUInstaller:
             text=True,
         )
 
+    def _patch_manual_hooks(self) -> None:
+        if self.variant.upper() == "NONE":
+            return
+        hook_patch: Path = PATCHES / "manual_hooks.patch"
+        apply_patch(hook_patch, check=False, cwd=WORKSPACE)
+
     def install(self) -> None:
         variant: str = self.variant.upper()
 
@@ -70,6 +80,8 @@ class KSUInstaller:
                     self._install_ksu("github.com:SukiSU-Ultra/SukiSU-Ultra", "nongki")
             case _:
                 return
+
+        self._patch_manual_hooks()
 
 
 if __name__ == "__main__":
