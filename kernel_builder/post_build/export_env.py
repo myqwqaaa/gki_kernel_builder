@@ -6,6 +6,7 @@ from dotenv import set_key
 from sh import Command, head, sed
 from datetime import datetime, timezone
 from kernel_builder.utils.env import susfs_enabled
+from kernel_builder.utils.github import GithubAPI
 from kernel_builder.config.config import KERNEL_NAME, RELEASE_BRANCH, RELEASE_REPO
 from kernel_builder.constants import ROOT, TOOLCHAIN, WORKSPACE, OUTPUT
 from kernel_builder.utils.build import Builder
@@ -17,6 +18,7 @@ class GithubExportEnv:
     def __init__(self) -> None:
         self.builder: Builder = Builder()
         self.variants: Variants = Variants()
+        self.gh_api: GithubAPI = GithubAPI()
         self.env_file: Path = ROOT / "github.env"
 
     def _write_env(self, env_map: dict[str, str]) -> None:
@@ -43,6 +45,12 @@ class GithubExportEnv:
         )
 
         # Get KernelSU version
+        suki_version: str = self.gh_api.fetch_latest_tag(
+            "https://api.github.com/repos/SukiSU-Ultra/SukiSU-Ultra/releases/latest"
+        )
+        next_version: str = self.gh_api.fetch_latest_tag(
+            "https://api.github.com/repos/KernelSU-Next/kernelSU-Next/releases/latest"
+        )
         ksu_version: str = os.getenv("KSU_VERSION", "Unknown")
 
         # Get build timestamp
@@ -56,6 +64,8 @@ class GithubExportEnv:
             "variant": self.variants.suffix,
             "susfs_version": susfs_version or "Disabled",
             "ksu_version": ksu_version,
+            "suki_version": suki_version,
+            "next_version": next_version,
             "toolchain": toolchain,
             "build_time": current_time,
             "release_repo": RELEASE_REPO,

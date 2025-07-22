@@ -36,8 +36,14 @@ on:
         description: 'SUSFS version'
         value: ${{ jobs.build.outputs.susfs_version }}
       ksu_version:
-        description: 'KernelSU version'
+        description: 'Specified KernelSU version'
         value: ${{ jobs.build.outputs.ksu_version }}
+      suki_version:
+        description: 'SukiSU Ultra version'
+        value: ${{ jobs.build.outputs.suki_version }}
+      next_version:
+        description: 'KernelSU Next version'
+        value: ${{ jobs.build.outputs.next_version }}
       toolchain:
         description: 'Toolchain version'
         value: ${{ jobs.build.outputs.toolchain }}
@@ -102,6 +108,8 @@ jobs:
       variant:        ${{ steps.import_env.outputs.variant }}
       susfs_version:  ${{ steps.import_env.outputs.susfs_version }}
       ksu_version:    ${{ steps.import_env.outputs.ksu_version }}
+      suki_version:   ${{ steps.import_env.outputs.suki_version }}
+      next_version:   ${{ steps.import_env.outputs.next_version }}
       toolchain:      ${{ steps.import_env.outputs.toolchain }}
       build_time:     ${{ steps.import_env.outputs.build_time }}
       release_repo:   ${{ steps.import_env.outputs.release_repo }}
@@ -124,7 +132,7 @@ jobs:
         with:
           fetch-depth: 1
           submodules: true
-          
+
       - name: Check required secrets
         env:
           NOTIFY: ${{ inputs.NOTIFY }}
@@ -139,7 +147,7 @@ jobs:
             echo "::error::Required secrets are missing. Please refer to README.md for proper configuration."
             exit $ret
           fi
-    
+
       - name: astral-sh/setup-uv
         uses: astral-sh/setup-uv@v6.4.1
         with:
@@ -170,18 +178,6 @@ jobs:
       - name: Import exported environment
         id: import_env
         run: |
-          # ====== build github env table:
-          # output          Output directory
-          # version         Kernel version
-          # variant         Variant suffix
-          # susfs_version   SUSFS version
-          # ksu_version     KernelSU version
-          # toolchain       Toolchain version
-          # build_time      Build timestamp
-          # release_repo    Release repo
-          # release_branch  Release branch
-          # kernel_name     Kernel name
-
           ENV_FILE="$GITHUB_WORKSPACE/github.env"
           [[ -f "$ENV_FILE" ]] || { echo "::error::$ENV_FILE missing"; exit 1; }
           while IFS='=' read -r key value; do
@@ -227,15 +223,15 @@ jobs:
           GITHUB_RUN_ID:     ${{ github.run_id }}
         run: |
           RUN_LINK="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          MESSAGE=$(cat <<EOF
-          $KERNEL_NAME Kernel CI
+          MESSAGE=$(cat <<-EOF
+          *$KERNEL_NAME Kernel CI*
 
           🐧 *Linux Version*: $VERSION
           📅 *Build Date*: $BUILD_DATE
-          🔰 *KernelSU*: $KSU_VARIANT | $KSU_VERSION
+          🔰 *KernelSU*: $KSU_VARIANT$([ "$KSU" != "NONE" ] && echo " | $KSU_VERSION")
           🎭 *SUSFS*: $SUSFS_VERSION
           📦 *LXC*: $([ "$LXC" = "true" ] && echo "Included" || echo "Disabled")
-          🛠️*Toolchain*: $TOOLCHAIN
+          🛠️ *Toolchain*: $TOOLCHAIN
 
           [Workflow Run]($RUN_LINK)
           #ci\_$GITHUB_RUN_ID

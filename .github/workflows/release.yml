@@ -37,10 +37,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OUTPUT_DIR:     ${{ needs.build.outputs.output }}
-      VERSION:        ${{ needs.build.outputs.version }}
+      KERNEL_VER:     ${{ needs.build.outputs.version }}
       VARIANT:        ${{ needs.build.outputs.variant }}
       SUSFS_VER:      ${{ needs.build.outputs.susfs_version }}
       KSU_VER:        ${{ needs.build.outputs.ksu_version }}
+      SUKI_VER:       ${{ needs.build.outputs.suki_version }}
+      NEXT_VER:       ${{ needs.build.outputs.next_version }}
       TOOLCHAIN:      ${{ needs.build.outputs.toolchain }}
       BUILD_DATE:     ${{ needs.build.outputs.build_time }}
       RELEASE_REPO:   ${{ needs.build.outputs.release_repo }}
@@ -70,7 +72,11 @@ jobs:
           if [ -z "$LATEST_TAG" ]; then
             RELEASE_TAG="v1.0"
           else
-            RELEASE_TAG=$(awk -F. '{ print $1 "." ($2 + 1) }' <<< "$LATEST_TAG")
+            if [[ ${LATEST##*.} -eq 9 ]]; then
+              RELEASE_TAG="v$(awk -F. '{print ($1+1)".0"}' <<<"$LATEST")"
+            else
+              RELEASE_TAG="v$(awk -F. '{print $1"."($2+1)}' <<<"$LATEST")"
+            fi
           fi
 
           echo "New tag: $RELEASE_TAG"
@@ -84,7 +90,11 @@ jobs:
           tag_name: ${{ env.RELEASE_TAG }}
           token: ${{ secrets.GH_TOKEN }}
           body: |
-            ## 📢 ESK KERNEL
+            ## "${KERNEL_NAME}" "${RELEASE_TAG}"
+            -> Kernel Version: ${KERNEL_VER}
+            -> SukiSU Ultra: "${SUKI_VER}"
+            -> KernelSU Next: "${NEXT_VER}"
+            -> SUSFS: "${SUSFS_VER}"
           prerelease: true
           generate_release_notes: true
           target_commitish: ${{ env.RELEASE_BRANCH }}

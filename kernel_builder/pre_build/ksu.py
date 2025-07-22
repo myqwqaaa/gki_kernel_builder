@@ -32,6 +32,7 @@ class KSUInstaller:
             ref = latest_tag
 
         os.environ["KSU_VERSION"] = latest_tag
+
         setup_url = f"https://raw.githubusercontent.com/{url.split(':', 1)[1]}/{ref}/kernel/setup.sh"
 
         log(f"Installing KernelSU from {url} | {ref}")
@@ -59,7 +60,7 @@ class KSUInstaller:
             case "NONE":
                 return
             case "NEXT":
-                self._install_ksu("github.com:kernelSU-Next/kernelSU-Next", "next")
+                self._install_ksu("github.com:KernelSU-Next/kernelSU-Next", "next")
             case "SUKI":
                 if self.use_susfs:
                     self._install_ksu(
