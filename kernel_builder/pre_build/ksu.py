@@ -58,7 +58,8 @@ class KSUInstaller:
         )
 
     def _patch_manual_hooks(self) -> None:
-        if self.variant.upper() == "NONE":
+        unsupported: list[str] = ["NONE", "OFFICIAL"]
+        if self.variant.upper() in unsupported:
             return
         hook_patch: Path = PATCHES / "manual_hooks.patch"
         apply_patch(hook_patch, check=False, cwd=WORKSPACE)
@@ -69,6 +70,8 @@ class KSUInstaller:
         match variant:
             case "NONE":
                 return
+            case "OFFICIAL":
+                self._install_ksu("github.com:tiann/KernelSU", "main")
             case "NEXT":
                 self._install_ksu("github.com:KernelSU-Next/kernelSU-Next", "next")
             case "SUKI":

@@ -23,6 +23,8 @@ class Variants:
 
         if k == "NONE":
             result = ["Non-KSU"]
+        elif k == "OFFICIAL":
+            result = ["KSU"]
         elif k == "NEXT":
             result = ["KSUN"]
         elif k == "SUKI":

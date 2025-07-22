@@ -11,16 +11,19 @@ jobs:
     strategy:
       matrix:
         variant:
-          - { name: "Non-KSU",                KSU: "NONE", SUSFS: "false", LXC: "false" }
-          - { name: "Non-KSU-LXC",            KSU: "NONE", SUSFS: "false", LXC: "true"  }
-          - { name: "KSUN",                   KSU: "NEXT", SUSFS: "false", LXC: "false" }
-          - { name: "KSUN-SUSFS",             KSU: "NEXT", SUSFS: "true",  LXC: "false" }
-          - { name: "KSUN-LXC",               KSU: "NEXT", SUSFS: "false", LXC: "true"  }
-          - { name: "KSUN-SUSFS-LXC",         KSU: "NEXT", SUSFS: "true",  LXC: "true"  }
-          - { name: "SUKISU",                 KSU: "SUKI", SUSFS: "false", LXC: "false" }
-          - { name: "SUKISU-SUSFS",           KSU: "SUKI", SUSFS: "true",  LXC: "false" }
-          - { name: "SUKISU-LXC",             KSU: "SUKI", SUSFS: "false", LXC: "true"  }
-          - { name: "SUKISU-SUSFS-LXC",       KSU: "SUKI", SUSFS: "true",  LXC: "true"  }
+          - { name: "Non-KSU",                KSU: "NONE",     SUSFS: "false", LXC: "false" }
+          - { name: "Non-KSU-LXC",            KSU: "NONE",     SUSFS: "false", LXC: "true"  }
+          - { name: "KSU",                    KSU: "OFFICIAL", SUSFS: "false", LXC: "false" }
+          - { name: "KSU-SUSFS",              KSU: "OFFICIAL", SUSFS: "true",  LXC: "false" }
+          - { name: "KSU-LXC",                KSU: "OFFICIAL", SUSFS: "false", LXC: "true"  }
+          - { name: "KSUN",                   KSU: "NEXT",     SUSFS: "false", LXC: "false" }
+          - { name: "KSUN-SUSFS",             KSU: "NEXT",     SUSFS: "true",  LXC: "false" }
+          - { name: "KSUN-LXC",               KSU: "NEXT",     SUSFS: "false", LXC: "true"  }
+          - { name: "KSUN-SUSFS-LXC",         KSU: "NEXT",     SUSFS: "true",  LXC: "true"  }
+          - { name: "SUKISU",                 KSU: "SUKI",     SUSFS: "false", LXC: "false" }
+          - { name: "SUKISU-SUSFS",           KSU: "SUKI",     SUSFS: "true",  LXC: "false" }
+          - { name: "SUKISU-LXC",             KSU: "SUKI",     SUSFS: "false", LXC: "true"  }
+          - { name: "SUKISU-SUSFS-LXC",       KSU: "SUKI",     SUSFS: "true",  LXC: "true"  }
     name: Build ${{ matrix.variant.name }} variant
     uses: ./.github/workflows/build.yml
     secrets: inherit
@@ -69,14 +72,22 @@ jobs:
            --header "Authorization: token $GH_TOKEN" \
            --jq '.[0].name')
 
-          if [ -z "$LATEST_TAG" ]; then
+          LATEST=${LATEST_TAG#v}
+
+          if [[ -z "$LATEST" ]]; then
             RELEASE_TAG="v1.0"
           else
-            if [[ ${LATEST##*.} -eq 9 ]]; then
-              RELEASE_TAG="v$(awk -F. '{print ($1+1)".0"}' <<<"$LATEST")"
+            MAJOR=${LATEST%%.*}
+            MINOR=${LATEST##*.}
+
+            if (( MINOR == 9 )); then
+              (( MAJOR++ ))
+              MINOR=0
             else
-              RELEASE_TAG="v$(awk -F. '{print $1"."($2+1)}' <<<"$LATEST")"
+              (( MINOR++ ))
             fi
+
+            RELEASE_TAG="v${MAJOR}.${MINOR}"
           fi
 
           echo "New tag: $RELEASE_TAG"
@@ -90,11 +101,11 @@ jobs:
           tag_name: ${{ env.RELEASE_TAG }}
           token: ${{ secrets.GH_TOKEN }}
           body: |
-            ## "${KERNEL_NAME}" "${RELEASE_TAG}"
-            -> Kernel Version: ${KERNEL_VER}
-            -> SukiSU Ultra: "${SUKI_VER}"
-            -> KernelSU Next: "${NEXT_VER}"
-            -> SUSFS: "${SUSFS_VER}"
+            ## ${{ env.KERNEL_NAME }} ${{ env.RELEASE_TAG }}
+            - Kernel Version:   ${{ env.KERNEL_VER }}
+            - SukiSU Ultra:     ${{ env.SUKI_VER }}
+            - KernelSU Next:    ${{ env.NEXT_VER }}
+            - SUSFS:            ${{ env.SUSFS_VER }}
           prerelease: true
           generate_release_notes: true
           target_commitish: ${{ env.RELEASE_BRANCH }}
