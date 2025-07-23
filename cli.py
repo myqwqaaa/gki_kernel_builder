@@ -29,7 +29,7 @@ def build(
             "--ksu",
             "-k",
             envvar="KSU",
-            help="KernelSU variant",
+            help="KernelSU variant (NONE, OFFICIAL, SUKI, NEXT)",
         ),
     ] = "NONE",
     susfs: Annotated[
