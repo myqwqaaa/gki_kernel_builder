@@ -69,7 +69,7 @@ def build(
 
     configure_log(logfile=LOGFILE)
     if verbose:
-        sh.Command._call_args.update({"tee": True})
+        sh.Command._call_args["_tee"] = True
 
     os.environ.update(
         KSU=str(ksu),
