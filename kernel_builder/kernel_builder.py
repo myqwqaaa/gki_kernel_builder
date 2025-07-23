@@ -19,12 +19,7 @@ from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
 from kernel_builder.post_build.export_env import GithubExportEnv
-from kernel_builder.utils.env import (
-    ksu_variant,
-    susfs_enabled,
-    lxc_enabled,
-    verbose_enabled,
-)
+from kernel_builder.utils.env import ksu_variant, susfs_enabled, lxc_enabled
 
 
 class KernelBuilder:
@@ -49,9 +44,7 @@ class KernelBuilder:
         """
         Run the complete build process.
         """
-        log(
-            f"Build Config: {ksu_variant()=}, {susfs_enabled()=}, {lxc_enabled()=}, {verbose_enabled()}"
-        )
+        log(f"Build Config: {ksu_variant()=}, {susfs_enabled()=}, {lxc_enabled()=}")
 
         log("Setting up environment variables...")
         self.environment.setup_env()

@@ -15,7 +15,3 @@ def susfs_enabled(default: str = "false") -> bool:
 
 def lxc_enabled(default: str = "false") -> bool:
     return _bool_env("LXC", default)
-
-
-def verbose_enabled(default: str = "false") -> bool:
-    return _bool_env("VERBOSE_OUTPUT", default)

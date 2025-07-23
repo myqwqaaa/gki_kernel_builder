@@ -31,7 +31,6 @@ jobs:
       KSU: ${{ matrix.variant.KSU }}
       SUSFS: ${{ matrix.variant.SUSFS }}
       LXC: ${{ matrix.variant.LXC }}
-      VERBOSE: "false"
       NOTIFY: "false"
 
   release:

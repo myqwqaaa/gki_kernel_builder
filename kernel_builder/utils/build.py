@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 from sh import make
 from os import cpu_count
 from pathlib import Path
@@ -33,6 +34,8 @@ class Builder:
             f"O={out}",
             _cwd=Path.cwd(),
             _env={**os.environ, "CC": "ccache clang", "CXX": "ccache clang++"},
+            _out=sys.stdout,
+            _err=sys.stderr,
         )
 
     def build(

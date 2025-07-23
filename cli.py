@@ -13,7 +13,6 @@ import shutil
 import typer
 import dotenv
 import os
-import sh
 
 app: Typer = typer.Typer(help="GKI Kernel Builder CLI", pretty_exceptions_enable=False)
 
@@ -49,14 +48,6 @@ def build(
             help="Enable or disable LXC",
         ),
     ] = _bool_env("LXC"),
-    verbose: Annotated[
-        bool,
-        Option(
-            "--verbose/--no-verbose",
-            "-v",
-            help="Verbose output",
-        ),
-    ] = _bool_env("VERBOSE_OUTPUT"),
 ) -> None:
     if ksu == "NONE" and susfs:
         typer.secho("[ERROR] SUSFS requires KernelSU", err=True, fg=typer.colors.RED)
@@ -65,17 +56,14 @@ def build(
     if os.getenv("GITHUB_ACTIONS") != "true":
         dotenv.load_dotenv()
 
-    typer.echo(message=f"Start Build: {ksu=}, {susfs=}, {lxc=}, {verbose=}")
+    typer.echo(message=f"Start Build: {ksu=}, {susfs=}, {lxc=}")
 
     configure_log(logfile=LOGFILE)
-    if verbose:
-        sh.Command._call_args["_tee"] = True
 
     os.environ.update(
         KSU=str(ksu),
         SUSFS=str(susfs).lower(),
         LXC=str(lxc).lower(),
-        VERBOSE_OUTPUT=str(verbose).lower(),
     )
 
     KernelBuilder().run_build()

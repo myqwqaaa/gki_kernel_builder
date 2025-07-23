@@ -97,14 +97,11 @@ Build KernelSU NEXT with SUSFS (no LXC):
 uv run cli.py build -k NEXT -s
 ```
 
-Build SukiSU with verbose logging, SUSFS and LXC disabled:
+Build SukiSU with LXC without SUSFS:
 
 ```bash
-uv run cli.py build --verbose --ksu SUKI --no-susfs --no-lxc
+uv run cli.py build --ksu SUKI --no-susfs --lxc
 ```
-
-> [!TIP]
-> Use `--verbose` or `-v` to see detailed logs, great for debugging!
 
 ---
 

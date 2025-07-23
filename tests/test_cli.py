@@ -13,20 +13,16 @@ runner: CliRunner = CliRunner()
 def test_env_var(mocker: MockerFixture) -> None:
     fake: MockType = mocker.patch("cli.KernelBuilder", autospec=True)
     result: Result = runner.invoke(
-        app, ["build", "--ksu", "SUKI", "--no-susfs", "--lxc", "--no-verbose"]
+        app, ["build", "--ksu", "SUKI", "--no-susfs", "--lxc"]
     )
 
     fake.assert_called_once_with()
 
     assert result.exit_code == 0
-    assert (
-        result.output.strip()
-        == "Start Build: ksu='SUKI', susfs=False, lxc=True, verbose=False"
-    )
+    assert result.output.strip() == "Start Build: ksu='SUKI', susfs=False, lxc=True"
     assert os.environ["KSU"] == "SUKI"
     assert os.environ["SUSFS"] == "false"
     assert os.environ["LXC"] == "true"
-    assert os.environ["VERBOSE_OUTPUT"] == "false"
 
 
 @pytest.mark.parametrize(
@@ -40,7 +36,7 @@ def test_env_var(mocker: MockerFixture) -> None:
 def test_build_guard(
     mocker: MockerFixture, ksu: str, susfs: str, expect_exit: bool
 ) -> None:
-    cmd: list[str] = ["build", "--ksu", ksu, "--lxc", "--no-verbose"]
+    cmd: list[str] = ["build", "--ksu", ksu, "--lxc"]
     if susfs:
         cmd.append("--susfs")
 

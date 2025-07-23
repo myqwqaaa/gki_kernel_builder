@@ -15,9 +15,6 @@ on:
       LXC:
         type: string
         required: true
-      VERBOSE:
-        type: string
-        required: true
       NOTIFY:
         type: string
         required: true
@@ -76,12 +73,6 @@ on:
 
       LXC:
         description: "Enable LXC"
-        default: "false"
-        type: choice
-        options: ["false", "true"]
-
-      VERBOSE:
-        description: "Enable verbose output"
         default: "false"
         type: choice
         options: ["false", "true"]
