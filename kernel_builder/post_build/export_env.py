@@ -5,7 +5,6 @@ from pathlib import Path
 from dotenv import set_key
 from sh import Command, head, sed
 from datetime import datetime, timezone
-from kernel_builder.utils.env import susfs_enabled
 from kernel_builder.utils.github import GithubAPI
 from kernel_builder.config.config import KERNEL_NAME, RELEASE_BRANCH, RELEASE_REPO
 from kernel_builder.constants import ROOT, TOOLCHAIN, WORKSPACE, OUTPUT
@@ -35,21 +34,27 @@ class GithubExportEnv:
         ).strip()
 
         # Get SUSFS version
-        susfs_version: str | None = (
-            re.search(
-                r"v\d+\.\d+\.\d+",
-                (WORKSPACE / "include" / "linux" / "susfs.h").read_text(),
-            ).group()  # pyright: ignore[reportOptionalMemberAccess]
-            if susfs_enabled()
-            else None
-        )
+        susfs_version: str | None = re.search(
+            r"v\d+\.\d+\.\d+",
+            (
+                WORKSPACE
+                / "susfs4ksu"
+                / "kernel_patches"
+                / "include"
+                / "linux"
+                / "susfs.h"
+            ).read_text(),
+        ).group()  # pyright: ignore[reportOptionalMemberAccess]
 
         # Get KernelSU version
+        official_version: str = self.gh_api.fetch_latest_tag(
+            "https://api.github.com/repos/tiann/KernelSU/releases/latest"
+        )
         suki_version: str = self.gh_api.fetch_latest_tag(
             "https://api.github.com/repos/SukiSU-Ultra/SukiSU-Ultra/releases/latest"
         )
         next_version: str = self.gh_api.fetch_latest_tag(
-            "https://api.github.com/repos/KernelSU-Next/kernelSU-Next/releases/latest"
+            "https://api.github.com/repos/KernelSU-Next/KernelSU-Next/releases/latest"
         )
         ksu_version: str = os.getenv("KSU_VERSION", "Unknown")
 
@@ -62,8 +67,9 @@ class GithubExportEnv:
             "output": str(OUTPUT),
             "version": self.builder.get_kernel_version(),
             "variant": self.variants.suffix,
-            "susfs_version": susfs_version or "Disabled",
+            "susfs_version": susfs_version,
             "ksu_version": ksu_version,
+            "official_version": official_version,
             "suki_version": suki_version,
             "next_version": next_version,
             "toolchain": toolchain,

@@ -42,7 +42,7 @@ jobs:
       KERNEL_VER:     ${{ needs.build.outputs.version }}
       VARIANT:        ${{ needs.build.outputs.variant }}
       SUSFS_VER:      ${{ needs.build.outputs.susfs_version }}
-      KSU_VER:        ${{ needs.build.outputs.ksu_version }}
+      KSU_VER:        ${{ needs.build.outputs.official_version }}
       SUKI_VER:       ${{ needs.build.outputs.suki_version }}
       NEXT_VER:       ${{ needs.build.outputs.next_version }}
       TOOLCHAIN:      ${{ needs.build.outputs.toolchain }}
@@ -96,16 +96,16 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           repository: ${{ env.RELEASE_REPO }}
-          name: ${{ env.RELEASE_TAG }}
+          name: "${{ env.KERNEL_NAME }} Kernel ${{ env.RELEASE_TAG }}"
           tag_name: ${{ env.RELEASE_TAG }}
           token: ${{ secrets.GH_TOKEN }}
           body: |
-            ## ${{ env.KERNEL_NAME }} ${{ env.RELEASE_TAG }}
-            - Kernel Version:   ${{ env.KERNEL_VER }}
-            - SukiSU Ultra:     ${{ env.SUKI_VER }}
-            - KernelSU Next:    ${{ env.NEXT_VER }}
-            - SUSFS:            ${{ env.SUSFS_VER }}
-          prerelease: true
+            ## ${{ env.KERNEL_NAME }} Builds
+            - Kernel Version: ${{ env.KERNEL_VER }}
+            - KernelSU: ${{ env.KSU_VER  }}
+            - SukiSU Ultra: ${{ env.SUKI_VER }}
+            - KernelSU Next: ${{ env.NEXT_VER }}
+            - SUSFS: ${{ env.SUSFS_VER }}
           generate_release_notes: true
           target_commitish: ${{ env.RELEASE_BRANCH }}
           files: release_files/**/*
