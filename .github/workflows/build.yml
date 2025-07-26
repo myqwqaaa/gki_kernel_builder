@@ -161,6 +161,21 @@ jobs:
           uv venv
           uv sync --frozen --no-install-project
 
+      - name: Set up ccache directory
+        run: |
+          ccache --version
+          ccache --max-size=4G
+          ccache --set-config=compression=true
+          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
+
+      - name: Restore ccache cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ github.job }}-${{ github.ref_name }}
+          restore-keys: |
+            ccache-${{ github.job }}-
+
       - name: Build
         env:
           KSU:   ${{ inputs.KSU }}
@@ -179,7 +194,7 @@ jobs:
             # Ignore empty lines
             [[ -z "$key" || "$key" == \#* ]] && continue
 
-            # Strip leading and trailing whitespace
+            # Strip whitespaces
             key=$(echo "$key" | xargs)
             value=$(echo "$value" | xargs)
 
