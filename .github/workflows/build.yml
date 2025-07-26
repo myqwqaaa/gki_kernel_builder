@@ -32,9 +32,6 @@ on:
       susfs_version:
         description: 'SUSFS version'
         value: ${{ jobs.build.outputs.susfs_version }}
-      ksu_version:
-        description: 'Specified KernelSU version'
-        value: ${{ jobs.build.outputs.ksu_version }}
       official_version:
         description: 'Official KernelSU version'
         value: ${{ jobs.build.outputs.official_version }}
@@ -45,7 +42,7 @@ on:
         description: 'KernelSU Next version'
         value: ${{ jobs.build.outputs.next_version }}
       toolchain:
-        description: 'Toolchain version'
+        description: 'Toolchain'
         value: ${{ jobs.build.outputs.toolchain }}
       build_time:
         description: 'Build timestamp'
@@ -101,7 +98,6 @@ jobs:
       version:          ${{ steps.import_env.outputs.version }}
       variant:          ${{ steps.import_env.outputs.variant }}
       susfs_version:    ${{ steps.import_env.outputs.susfs_version }}
-      ksu_version:      ${{ steps.import_env.outputs.ksu_version }}
       official_version: ${{ steps.import_env.outputs.official_version }}
       suki_version:     ${{ steps.import_env.outputs.suki_version }}
       next_version:     ${{ steps.import_env.outputs.next_version }}
@@ -133,11 +129,16 @@ jobs:
           NOTIFY: ${{ inputs.NOTIFY }}
         run: |
           ret=0
+
+          # Check for required secrets for telegram notify
           if [[ "$NOTIFY" == "true" ]]; then
             [[ -z "$TG_CHAT_ID"   ]] && { echo "::error::Missing TG_CHAT_ID";    ((ret++)); }
             [[ -z "$TG_BOT_TOKEN" ]] && { echo "::error::Missing TG_BOT_TOKEN";  ((ret++)); }
           fi
+
+          # Mandatory secrets
           [[ -z "$GH_TOKEN" ]] && { echo "::error::Missing GH_TOKEN"; ((ret++)); }
+
           if (( ret )); then
             echo "::error::Required secrets are missing. Please refer to README.md for proper configuration."
             exit $ret
