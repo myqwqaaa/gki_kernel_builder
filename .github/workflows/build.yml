@@ -164,16 +164,17 @@ jobs:
       - name: Set up ccache directory
         run: |
           ccache --version
-          ccache --max-size=4G
+          ccache --max-size=2G
           ccache --set-config=compression=true
           echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
 
-      - name: Restore ccache cache
+      - name: Restore ccache
         uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ github.job }}-${{ github.ref_name }}
+          key: ccache-${{ github.job }}-${{ github.ref_name }}-${{ inputs.KSU }}-${{ inputs.SUSFS }}-${{ inputs.LXC }}
           restore-keys: |
+            ccache-${{ github.job }}-${{ github.ref_name }}-
             ccache-${{ github.job }}-
 
       - name: Build
