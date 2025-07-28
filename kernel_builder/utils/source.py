@@ -1,11 +1,13 @@
 import re
+from dataclasses import dataclass, field
+from re import Pattern
+from urllib.parse import ParseResult, urlparse, urlunparse
+
 import requests
 from sh import git
-from dataclasses import dataclass, field
+
 from kernel_builder.config.manifest import SOURCES
-from urllib.parse import ParseResult, urlparse, urlunparse
 from kernel_builder.utils.log import log
-from re import Pattern
 
 
 @dataclass(slots=True)

@@ -1,9 +1,11 @@
-from sh import Command
-import sh
 from pathlib import Path
+
+import sh
+from sh import Command
+
+from kernel_builder.constants import ROOT
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from kernel_builder.constants import ROOT
 
 # Baked Commands
 curl: Command = sh.Command("curl").bake("-fsSL", "--retry", "5", "--retry-all-errors")
@@ -16,6 +18,9 @@ aria2c: Command = sh.Command("aria2c").bake(
 def apply_patch(
     patch_file: Path, *, check: bool = True, cwd: Path | None = None
 ) -> sh.RunningCommand:
+    if not patch_file.exists():
+        log(f"Patch not found at {patch_file}", "error")
+        raise FileNotFoundError()
     log(f"Patching file: {FileSystem.relative_to(ROOT, patch_file)}")
     cwd = cwd or Path.cwd()
     data: bytes = patch_file.read_bytes()

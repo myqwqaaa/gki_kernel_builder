@@ -1,7 +1,8 @@
-from typing import Any
-from requests.models import Response
-import requests
 import os
+from typing import Any
+
+import requests
+from requests.models import Response
 
 
 class GithubAPI:

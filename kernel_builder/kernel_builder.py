@@ -1,25 +1,26 @@
 import tarfile
 from pathlib import Path
-from kernel_builder.utils.clang import fetch_clang_url
-from kernel_builder.utils.command import aria2c
+
 from kernel_builder.config.config import (
     CLANG_URL,
     CLANG_VARIANT,
     IMAGE_COMP,
     KERNEL_NAME,
 )
-from kernel_builder.constants import TOOLCHAIN, WORKSPACE, OUTPUT
+from kernel_builder.constants import OUTPUT, TOOLCHAIN, WORKSPACE
+from kernel_builder.post_build.export_env import GithubExportEnv
 from kernel_builder.post_build.flashable import FlashableBuilder
 from kernel_builder.post_build.kpm import KPMPatcher
 from kernel_builder.pre_build.setup_env import SetupEnvironment
 from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.pre_build.variants import Variants
 from kernel_builder.utils.build import Builder
+from kernel_builder.utils.clang import fetch_clang_url
+from kernel_builder.utils.command import aria2c
+from kernel_builder.utils.env import ksu_variant, lxc_enabled, susfs_enabled
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
 from kernel_builder.utils.source import SourceManager
-from kernel_builder.post_build.export_env import GithubExportEnv
-from kernel_builder.utils.env import ksu_variant, susfs_enabled, lxc_enabled
 
 
 class KernelBuilder:

@@ -1,9 +1,11 @@
 import shutil
 import zipfile
 from pathlib import Path
+
 from sh import Command
+
 from kernel_builder.config.config import BOOT_SIGNING_KEY, GKI_URL, IMAGE_COMP
-from kernel_builder.constants import TOOLCHAIN, WORKSPACE, OUTPUT
+from kernel_builder.constants import OUTPUT, TOOLCHAIN, WORKSPACE
 from kernel_builder.utils.command import curl
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log

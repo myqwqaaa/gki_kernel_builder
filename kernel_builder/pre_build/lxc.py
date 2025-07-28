@@ -1,10 +1,11 @@
+from pathlib import Path
 from typing import override
+
+from kernel_builder.constants import PATCHES
 from kernel_builder.interface.patcher import PatcherInterface
 from kernel_builder.utils import env
-from kernel_builder.constants import PATCHES
 from kernel_builder.utils.command import apply_patch
 from kernel_builder.utils.log import log
-from pathlib import Path
 
 
 class LXCPatcher(PatcherInterface):

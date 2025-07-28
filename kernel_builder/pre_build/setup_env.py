@@ -1,18 +1,19 @@
 import os
-from typing import Final
 from pathlib import Path
+from typing import Final
+
 from kernel_builder.config.config import BUILD_HOST, BUILD_USER
 from kernel_builder.constants import (
+    CLANG_TRIPLE,
+    CROSS_COMPILE,
     LLVM,
     LLVM_IAS,
     LTO_CLANG_FULL,
     LTO_CLANG_THIN,
     TOOLCHAIN,
-    CLANG_TRIPLE,
-    CROSS_COMPILE,
 )
-from kernel_builder.utils.build import Builder
 from kernel_builder.pre_build.variants import Variants
+from kernel_builder.utils.build import Builder
 
 
 class SetupEnvironment:

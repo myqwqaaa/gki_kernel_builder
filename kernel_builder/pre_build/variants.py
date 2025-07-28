@@ -1,9 +1,10 @@
+from dataclasses import dataclass, field
+
 from kernel_builder.pre_build.ksu import KSUInstaller
 from kernel_builder.pre_build.lxc import LXCPatcher
 from kernel_builder.pre_build.susfs import SUSFSPatcher
 from kernel_builder.utils import env
 from kernel_builder.utils.log import log
-from dataclasses import dataclass, field
 
 
 @dataclass(slots=True)

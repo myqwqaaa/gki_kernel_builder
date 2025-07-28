@@ -1,6 +1,8 @@
-from kernel_builder.constants import WORKSPACE, TOOLCHAIN
-from .config import ANYKERNEL_REPO, ANYKERNEL_BRANCH, KERNEL_BRANCH, KERNEL_REPO
 from typing import Final, TypeAlias
+
+from kernel_builder.constants import TOOLCHAIN, WORKSPACE
+
+from .config import ANYKERNEL_BRANCH, ANYKERNEL_REPO, KERNEL_BRANCH, KERNEL_REPO
 
 # Simplified Git link format
 #

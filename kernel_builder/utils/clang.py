@@ -1,8 +1,10 @@
 from functools import partial
 from typing import Final
+
+from sh import grep, sed, sort, tail
+
 from kernel_builder.utils.command import curl
 from kernel_builder.utils.github import GithubAPI
-from sh import sed, tail, sort, grep
 
 # Toolchain Repo
 SLIM_CLANG: Final[str] = "https://www.kernel.org/pub/tools/llvm/files/"

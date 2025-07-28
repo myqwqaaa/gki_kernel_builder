@@ -1,13 +1,14 @@
-import shutil
 import os
 import re
-from typing import override
-from kernel_builder.interface.patcher import PatcherInterface
-from kernel_builder.constants import WILD_PATCHES, WORKSPACE
-from kernel_builder.utils.env import ksu_variant, susfs_enabled
-from kernel_builder.utils.command import apply_patch
-from kernel_builder.utils.log import log
+import shutil
 from pathlib import Path
+from typing import override
+
+from kernel_builder.constants import WILD_PATCHES, WORKSPACE
+from kernel_builder.interface.patcher import PatcherInterface
+from kernel_builder.utils.command import apply_patch
+from kernel_builder.utils.env import ksu_variant, susfs_enabled
+from kernel_builder.utils.log import log
 
 
 class SUSFSPatcher(PatcherInterface):

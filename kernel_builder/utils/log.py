@@ -1,12 +1,12 @@
 import logging
 import re
-from re import Match, Pattern
-from logging import FileHandler, Filter, Handler, LogRecord
+from logging import FileHandler, Filter, Handler, Logger, LogRecord
 from pathlib import Path
-from logging import Logger
+from re import Match, Pattern
 from typing import override
-from rich.logging import RichHandler
+
 from rich.console import Console
+from rich.logging import RichHandler
 
 logger: Logger = logging.getLogger(__name__)
 console: Console = Console(force_terminal=True, color_system="auto")

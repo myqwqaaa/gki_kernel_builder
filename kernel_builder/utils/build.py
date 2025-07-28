@@ -1,17 +1,19 @@
 import os
 import re
 import sys
-from sh import make
+from dataclasses import dataclass, field
 from os import cpu_count
 from pathlib import Path
-from dataclasses import dataclass, field
-from kernel_builder.pre_build.configurator import configurator
-from kernel_builder.config.config import IMAGE_COMP, DEFCONFIG
+from typing import ClassVar
+
+from sh import make
+
+from kernel_builder.config.config import DEFCONFIG, IMAGE_COMP
 from kernel_builder.constants import WORKSPACE
+from kernel_builder.pre_build.configurator import configurator
 from kernel_builder.utils import env
 from kernel_builder.utils.fs import FileSystem
 from kernel_builder.utils.log import log
-from typing import ClassVar
 
 
 @dataclass(slots=True)

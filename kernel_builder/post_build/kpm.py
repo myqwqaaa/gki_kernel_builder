@@ -1,14 +1,15 @@
-import shutil
 import gzip
-import lz4.frame
-from sh import curl
+import shutil
 from pathlib import Path
-from sh import Command
-from kernel_builder.utils.fs import FileSystem
-from kernel_builder.utils.log import log
+
+import lz4.frame
+from sh import Command, curl
+
 from kernel_builder.config.config import IMAGE_COMP
 from kernel_builder.constants import WORKSPACE
 from kernel_builder.utils.env import ksu_variant
+from kernel_builder.utils.fs import FileSystem
+from kernel_builder.utils.log import log
 
 
 class KPMPatcher:

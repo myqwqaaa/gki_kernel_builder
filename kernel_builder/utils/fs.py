@@ -1,8 +1,9 @@
 import shutil
+from os import chdir
+from pathlib import Path
+
 from kernel_builder.constants import ROOT
 from kernel_builder.utils.log import log
-from pathlib import Path
-from os import chdir
 
 
 class FileSystem:

@@ -1,15 +1,17 @@
 import os
-import sh
 import re
+from datetime import datetime, timezone
 from pathlib import Path
+
+import sh
 from dotenv import set_key
 from sh import Command, head, sed
-from datetime import datetime, timezone
-from kernel_builder.utils.github import GithubAPI
+
 from kernel_builder.config.config import KERNEL_NAME, RELEASE_BRANCH, RELEASE_REPO
-from kernel_builder.constants import ROOT, TOOLCHAIN, WORKSPACE, OUTPUT
-from kernel_builder.utils.build import Builder
+from kernel_builder.constants import OUTPUT, ROOT, TOOLCHAIN, WORKSPACE
 from kernel_builder.pre_build.variants import Variants
+from kernel_builder.utils.build import Builder
+from kernel_builder.utils.github import GithubAPI
 from kernel_builder.utils.log import log
 
 

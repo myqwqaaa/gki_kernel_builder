@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-from typer.main import Typer
-from typer import Option
+import os
+import shutil
 from pathlib import Path
 from typing import Annotated
-from kernel_builder.utils.log import configure_log
-from kernel_builder.config.config import LOGFILE
-from kernel_builder.constants import WORKSPACE, TOOLCHAIN, ROOT, OUTPUT
-from kernel_builder.kernel_builder import KernelBuilder
-import shutil
-import typer
+
 import dotenv
-import os
+import typer
+from typer import Option
+from typer.main import Typer
+
+from kernel_builder.config.config import LOGFILE
+from kernel_builder.constants import OUTPUT, ROOT, TOOLCHAIN, WORKSPACE
+from kernel_builder.kernel_builder import KernelBuilder
+from kernel_builder.utils.log import configure_log
 
 app: Typer = typer.Typer(help="GKI Kernel Builder CLI", pretty_exceptions_enable=False)
 
