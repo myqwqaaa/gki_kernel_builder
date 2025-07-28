@@ -1,12 +1,13 @@
 [project]
-name = "kernel_builder"
-version = "0.1.0"
-description = "A python gki kernel builder"
-readme = "README.md"
+name            = "kernel_builder"
+version         = "1.0.0"
+description     = "A python gki kernel builder"
+readme          = "README.md"
+license         = "GPL-3.0"
+license-files   = ["LICEN[CS]E*"]
 requires-python = ">=3.12"
-dependencies = [
+dependencies    = [
     "basedpyright>=1.29.4",
-    "datetime>=5.5",
     "lz4>=4.4.4",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
@@ -23,33 +24,34 @@ dependencies = [
 
 [tool.ruff]
 target-version = "py312"
-line-length = 120
+line-length    = 120
 extend-exclude = ["tests", "typings"]
 
 [tool.ruff.lint]
 extend-select = ["I"]
-fixable = ["ALL"]
+fixable       = ["ALL"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["kernel_builder"]
+known-first-party  = ["kernel_builder"]
 combine-as-imports = true
 
 [tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
+quote-style               = "double"
+indent-style              = "space"
 skip-magic-trailing-comma = false
-line-ending = "auto"
+line-ending               = "auto"
 
 
 [tool.basedpyright]
 include = ["kernel_builder"]
 exclude = ["tests", "typings"]
 
-pythonVersion = "3.12"
-pythonPlatform  = "Linux"
+pythonVersion    = "3.12"
+pythonPlatform   = "Linux"
 typeCheckingMode = "recommended"
-stubPath = "typings"
+stubPath         = "typings"
 
-reportUnusedCallResult = "none"
-reportExplicitAny      = "none"
-reportAny              = "none"
+reportCallInDefaultInitializer = "none"
+reportUnusedCallResult         = "none"
+reportExplicitAny              = "none"
+reportAny                      = "none"
