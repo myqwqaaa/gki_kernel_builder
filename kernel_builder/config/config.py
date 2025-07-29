@@ -11,7 +11,7 @@ BUILD_HOST: Final[str] = "esk"
 IMAGE_COMP: Final[Literal["raw", "lz4", "gz"]] = "gz"
 
 # ---- Kernel
-KERNEL_REPO: Final[str] = "github.com:bachnxuan/android12-5.10-lts"
+KERNEL_REPO: Final[str] = "github.com:myqwqaaa/android12-5.10-lts"
 KERNEL_BRANCH: Final[str] = "esk/main"
 
 # ---- AnyKernel3
@@ -19,7 +19,7 @@ ANYKERNEL_REPO = "github.com:bachnxuan/AnyKernel3"
 ANYKERNEL_BRANCH = "android12-5.10"
 
 # ---- Release
-RELEASE_REPO: Final[str] = "bachnxuan/android12-5.10-lts"
+RELEASE_REPO: Final[str] = "myqwqaaa/android12-5.10-lts"
 RELEASE_BRANCH: Final[str] = "esk/main"
 
 # ---- Clang
